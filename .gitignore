@@ -1,3 +1,3 @@
 .vscode
-*/Contracts/build/*
-*node_modules*
+Contracts/build
+node_modules
