@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 import './TokenConfig.sol';
 
@@ -9,7 +9,7 @@ import './TokenConfig.sol';
  * @dev The static configuration for the Token fundraiser.
  */
 contract TokenFundraiserConfig is TokenConfig {
-    // The number of CAM per 1 ETH.
+    // The number of TOKEN per 1 ETH.
     uint constant CONVERSION_RATE = 9000;
 
     // The public sale hard cap of the fundraiser.

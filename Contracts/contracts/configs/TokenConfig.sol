@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 
 /**
@@ -11,7 +11,7 @@ contract TokenConfig {
     string constant NAME = "Token";
 
     // The symbol of the token.
-    string constant SYMBOL = "CAM";
+    string constant SYMBOL = "TOKEN";
 
     // The number of decimals for the token.
     uint8 constant DECIMALS = 18;  // Same as ethers.
