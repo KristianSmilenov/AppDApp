@@ -1,0 +1,147 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Overwatch
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# schemes:
+  # tip: remove http to make production-grade
+  # - http
+  # - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /campaigns:
+    x-swagger-router-controller: campaigns
+    get:
+      description: Returns all campaigns
+      # used as the method name of the controller
+      operationId: getCampaigns
+      tags: 
+        - Data
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items: 
+                  $ref: "#/definitions/Campaigns"
+            
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    post:
+      description: Create a campaign
+      # used as the method name of the controller
+      operationId: addCampaign
+      tags: 
+        - Data
+      parameters:
+        - name: body
+          in: body
+          description: Input parameters for creating a web hook
+          required: true
+          schema:
+            $ref: "#/definitions/NewCampaignRequest"
+      responses:
+        "200":
+          description: Success
+            
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /campaigns/{id}:
+    x-swagger-router-controller: campaigns
+    get:
+      description: Returns all campaigns
+      # used as the method name of the controller
+      operationId: getCampaign
+      tags: 
+        - Data
+      parameters:
+        - name: id
+          in: path
+          description: The campaign id
+          required: true
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items: 
+                  $ref: "#/definitions/Campaign"
+            
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+    
+  ErrorResponse:
+    required:
+      - error
+      - message
+    properties:
+      error: 
+        type: boolean
+      message:
+        type: string
+      
+  Campaigns:
+    type: "object"
+    items:
+      $ref: '#/definitions/Campaign'
+
+  Campaign:
+    required:
+      - id
+    properties: 
+      id:
+        type: number
+      description:
+        type: string
+      isActive:
+        type: boolean
+      endDate:
+        type: string
+
+  NewCampaignRequest:
+    required:
+      - id
+      - description
+      - endDate
+      - authToken
+    properties: 
+      id:
+        type: number
+      description:
+        type: string
+      isActive:
+        type: boolean
+      endDate:
+        type: string
+      authToken:
+        type: string
