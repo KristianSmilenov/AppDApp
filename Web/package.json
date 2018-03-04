@@ -10,13 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
-    "vue": "^2.5.13"
-  },
-  "devDependencies": {
+    "vue": "^2.5.13",
     "nodemon": "^1.17.1",
     "mongodb": "^3.0.1",
     "yamljs": "^0.3.0",
     "swagger-express-mw": "^0.1.0",
-    "swagger-ui-express": "^2.0.13"
+    "swagger-ui-express": "^2.0.13",
+    "web3": "^1.0.0-beta.30"
   }
 }
