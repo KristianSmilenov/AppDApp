@@ -1,4 +1,6 @@
+'use strict';
 
+var url = require('url');
 const http = require('http');
 const fs = require('fs');
 const express = require('express');
@@ -6,12 +8,19 @@ const SwaggerExpress = require('swagger-express-mw');
 
 //front-end server
 http.createServer(function (req, res) {
-    fs.readFile('./Web/src/index.html', function(err, data) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(data);
-        res.end();
-    });
-  }).listen(8080);
+  const prefix = "./Web/src/web_app";
+  var q = url.parse(req.url, true);
+  var filename = prefix + q.pathname;
+  fs.readFile(filename, function(err, data) {
+    if (err) {
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      return res.end("404 Not Found");
+    }  
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(data);
+    return res.end();
+  });
+}).listen(8080);
 
 
   //api server
