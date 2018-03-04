@@ -16,7 +16,12 @@ http.createServer(function (req, res) {
       res.writeHead(404, {'Content-Type': 'text/html'});
       return res.end("404 Not Found");
     }  
-    res.writeHead(200, {'Content-Type': 'text/html'});
+    var mimetypes = {html: 'text/html', css: 'text/css', js: 'text/javascript'};
+    var spl = filename.split('.');
+    var ext = spl[spl.length - 1];
+    var mime = mimetypes[ext];
+    if(!mime) mime = mimetypes.html;
+    res.writeHead(200, {'Content-Type': mime});
     res.write(data);
     return res.end();
   });
