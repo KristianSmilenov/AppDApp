@@ -11,6 +11,9 @@ http.createServer(function (req, res) {
   const prefix = "./Web/src/web_app";
   var q = url.parse(req.url, true);
   var filename = prefix + q.pathname;
+  if(q.pathname == "/")
+    filename += "index.html";
+
   fs.readFile(filename, function(err, data) {
     if (err) {
       res.writeHead(404, {'Content-Type': 'text/html'});
@@ -27,6 +30,7 @@ http.createServer(function (req, res) {
   });
 }).listen(8080);
 
+console.log('You can the web app at: http://127.0.0.1:8080');
 
   //api server
 
