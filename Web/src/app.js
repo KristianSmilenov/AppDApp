@@ -30,7 +30,7 @@ http.createServer(function (req, res) {
   });
 }).listen(8080);
 
-console.log('You can the web app at: http://127.0.0.1:8080');
+console.log('You can find the web application at: http://127.0.0.1:8080');
 
   //api server
 
@@ -66,6 +66,6 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
     
     app.listen(port);
 
-    console.log('You can find Swagger at: http://127.0.0.1:' + port);
+    console.log('You can find the REST API at: http://127.0.0.1:' + port);
   });
   
