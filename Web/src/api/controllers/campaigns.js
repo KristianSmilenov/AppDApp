@@ -1,6 +1,6 @@
 'use strict';
 
-const storage = require('../helpers/campaigns_storage.js');
+const storage = require('../utils/campaigns_storage.js');
 const authTokens = ['123', 'admin', 'pass', '123qwe', 'string'];
 
 module.exports = {

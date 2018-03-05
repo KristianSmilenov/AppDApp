@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Overwatch
+  title: Decentralized crypto-fund platform
 # during dev, should point to your local machine
 host: localhost:10010
 # basePath prefixes all resource paths 
@@ -17,6 +17,29 @@ consumes:
 produces:
   - application/json
 paths:
+  /contracts:
+    x-swagger-router-controller: contracts
+    post:
+      description: Deploy campaign token
+      operationId: deployCampaignToken
+      tags: 
+        - Contracts
+      parameters:
+        - name: body
+          in: body
+          description: Number of tokens to create
+          required: true
+          schema:
+            $ref: "#/definitions/DeployCampaignTokenRequest"
+      responses:
+        "200":
+          description: Success
+            
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /campaigns:
     x-swagger-router-controller: campaigns
     get:
@@ -145,3 +168,10 @@ definitions:
         type: string
       authToken:
         type: string
+
+  DeployCampaignTokenRequest:
+    required:
+      - amount
+    properties: 
+      amount:
+        type: number

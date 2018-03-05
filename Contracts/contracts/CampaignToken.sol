@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 import "./traits/HasOwner.sol";
 import "./configs/TokenConfig.sol";
