@@ -34,7 +34,8 @@ paths:
       responses:
         "200":
           description: Success
-            
+          schema:
+            $ref: "#/definitions/ContractDeployedResponse"
         # responses may fall through to errors
         default:
           description: Error
@@ -175,3 +176,50 @@ definitions:
     properties: 
       amount:
         type: number
+  
+  ContractDeployedResponse:
+    required:
+      - address
+      - abi
+    properties: 
+      address:
+        type: string
+      abi:
+        type: array
+        items: 
+          $ref: "#/definitions/ABI"
+  
+  ABIInput:
+    properties: 
+      name:
+        type: string
+      type:
+        type: string
+  
+  
+  ABIOutput:
+    properties: 
+      name:
+        type: string
+      type:
+        type: string
+  ABI:
+    properties: 
+      constant:
+        type: boolean
+      name:
+        type: string
+      payable:
+        type: boolean
+      stateMutability:
+        type: string
+      type:
+        type: string
+      inputs:
+        type: array
+        items: 
+          $ref: "#/definitions/ABIInput"
+      outputs:
+        type: array
+        items: 
+          $ref: "#/definitions/ABIOutput"

@@ -4,11 +4,12 @@ const conf = require('./config');
 const fs = require('fs');
 const Web3 = require('web3');
 const winston = require('winston')
+var Accounts = require('web3-eth-accounts');
 
 var web3 = new Web3(new Web3.providers.HttpProvider(conf.ethNode));
 
 //TODO: fix account - web3.eth.defaultAccount is async
-var account = conf.defaultAccount || web3.eth.defaultAccount;
+var account = conf.defaultAccount || web3.eth.coinbase;
 
 module.exports = {
     createContract: createContract,
@@ -25,28 +26,37 @@ function getAbi(contractName) {
 
 }
 
+async function getBalance() {
+    await web3.eth.getBalance(account);
+}
+
 async function createCampaignToken(tokensCount) {
+
     winston.log('info', 'Creating campaign token');
     return new Promise((resolve, reject) => {
         getAbi("CampaignToken").then((data) => {
+
             var abi = JSON.parse(data.result).abi;
-            winston.log('info', 'CampaignToken ABI retrieved');
-            var contractInstance = new web3.eth.Contract(abi, account, { from: account, gas: conf.gas, gasPrice: conf.gasPrice },
-                function (error, contract) {
-                    if (!error) {
-                        winston.log('info', 'CampaignToken data retrieved: ' + JSON.stringify(contract));
-                        if (contract.address) {
-                            winston.log('info', 'Successfully deployed contract: ' + contract.address);
-                            resolve({ contract: contract });
-                        }
-                    } else {
-                        winston.log('error', 'Error creating contract: ' + JSON.stringify(error));
-                        reject({ error: error });
-                    }
+            var bytecode = JSON.parse(data.result).bytecode;
+            winston.log('info', 'CampaignToken data retrieved');
+
+            var contract = new web3.eth.Contract(abi);
+            contract.deploy({
+                data: bytecode,
+                arguments: [tokensCount]
+            })
+                .send({ from: account, gas: conf.gas, gasPrice: conf.gasPrice }, function (error, transactionHash) {
+                    if (error) { reject({ error: true, message: error.message }); }
+                })
+                .on('error', function (error) { reject({ error: true, message: error.message }); })
+                .on('transactionHash', function (transactionHash) { winston.log('info', 'TransactionHash: ' + transactionHash); })
+                .on('confirmation', function (confirmationNumber, receipt) { })
+                .then(function (newContractInstance) {
+                    winston.log('info', newContractInstance.options.address);
+                    resolve({ contract: newContractInstance, abi: abi });
                 });
-            winston.log('info', JSON.stringify(contractInstance.methods));
         }, function (error) {
-            reject({ error: error });
+            reject({ error: true, message: error.message });
         })
     });
 }
