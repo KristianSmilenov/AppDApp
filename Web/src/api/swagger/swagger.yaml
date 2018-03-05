@@ -17,7 +17,7 @@ consumes:
 produces:
   - application/json
 paths:
-  /contracts:
+  /contracts/campaign-token:
     x-swagger-router-controller: contracts
     post:
       description: Deploy campaign token
@@ -31,6 +31,30 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/DeployCampaignTokenRequest"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ContractDeployedResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /contracts/campaign-fundraiser:
+    x-swagger-router-controller: contracts
+    post:
+      description: Deploy campaign token fundraiser
+      operationId: deployCampaignTokenFundraiser
+      tags: 
+        - Contracts
+      parameters:
+        - name: body
+          in: body
+          description: Fundraiser address
+          required: true
+          schema:
+            $ref: "#/definitions/DeployCampaignTokenFundraiserRequest"
       responses:
         "200":
           description: Success
@@ -176,6 +200,13 @@ definitions:
     properties: 
       amount:
         type: number
+  
+  DeployCampaignTokenFundraiserRequest:
+    required:
+      - address
+    properties: 
+      address:
+        type: string
   
   ContractDeployedResponse:
     required:

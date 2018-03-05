@@ -4,14 +4,22 @@ const utils = require('../utils/contract_utils.js');
 
 module.exports = {
     deployCampaignToken: deployCampaignToken,
+    deployCampaignTokenFundraiser: deployCampaignTokenFundraiser
 };
 
 function deployCampaignToken(req, res) {
-    //deployer.deploy(CampaignToken, 10000);
-    //deployer.deploy(CampaignTokenFundraiser, '0x627306090abaB3A6e1400e9345bC60c78a8BEf57');
-
     var amount = req.swagger.params.body.value.amount;
-    utils.createCampaignToken(amount).then((result) =>{
+    utils.createCampaignToken(amount).then((result) =>{ 
+        res.json({address: result.contract._address, abi: result.abi});
+    }).catch(result => {
+        res.status(400);
+        res.json({error: result.error, message: result.message});
+    });
+}
+
+function deployCampaignTokenFundraiser(req, res) {
+    var address = req.swagger.params.body.value.address;
+    utils.createCampaignTokenFundraiser(address).then((result) => {
         res.json({address: result.contract._address, abi: result.abi});
     }).catch(result => {
         res.status(400);

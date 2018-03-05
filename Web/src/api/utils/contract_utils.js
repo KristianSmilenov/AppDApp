@@ -1,5 +1,3 @@
-'use strict';
-
 const conf = require('./config');
 const fs = require('fs');
 const Web3 = require('web3');
@@ -14,7 +12,8 @@ var account = conf.defaultAccount || web3.eth.coinbase;
 module.exports = {
     createContract: createContract,
     getCampaignHash: getCampaignHash,
-    createCampaignToken: createCampaignToken
+    createCampaignToken: createCampaignToken,
+    createCampaignTokenFundraiser: createCampaignTokenFundraiser
 };
 
 function getAbi(contractName) {
@@ -30,20 +29,26 @@ async function getBalance() {
     await web3.eth.getBalance(account);
 }
 
-async function createCampaignToken(tokensCount) {
+async function createCampaignTokenFundraiser(address) {
+    return deployContract("CampaignTokenFundraiser", [address]);
+}
 
-    winston.log('info', 'Creating campaign token');
+async function createCampaignToken(tokensCount) {
+    return deployContract("CampaignToken", [tokensCount]);
+}
+
+async function deployContract(contractName, arguments) {
+
+    winston.log('info', 'Deploying ' + contractName + ' contract');
     return new Promise((resolve, reject) => {
-        getAbi("CampaignToken").then((data) => {
+        getAbi(contractName).then((data) => {
 
             var abi = JSON.parse(data.result).abi;
             var bytecode = JSON.parse(data.result).bytecode;
-            winston.log('info', 'CampaignToken data retrieved');
-
             var contract = new web3.eth.Contract(abi);
             contract.deploy({
                 data: bytecode,
-                arguments: [tokensCount]
+                arguments: arguments
             })
                 .send({ from: account, gas: conf.gas, gasPrice: conf.gasPrice }, function (error, transactionHash) {
                     if (error) { reject({ error: true, message: error.message }); }
