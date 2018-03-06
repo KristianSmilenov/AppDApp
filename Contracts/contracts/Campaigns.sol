@@ -13,7 +13,7 @@ contract Campaigns {
       }
 
       function getCampaignHash(uint8 id) view public returns (string) {
-            return  "asd";
+            return  campaigns[id].hashHex;
       }
 
       function addCampaign(uint8 id, bool isActive, string campaignHash) public {

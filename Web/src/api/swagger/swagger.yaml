@@ -40,6 +40,24 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
 
+  /contracts/campaign:
+    x-swagger-router-controller: contracts
+    get:
+      description: Deploy campaign contract
+      operationId: deployCampaigns
+      tags: 
+        - Contracts
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ContractDeployedResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
   /contracts/campaign-token:
     x-swagger-router-controller: contracts
     post:
@@ -64,6 +82,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  
   /contracts/campaign-fundraiser:
     x-swagger-router-controller: contracts
     post:

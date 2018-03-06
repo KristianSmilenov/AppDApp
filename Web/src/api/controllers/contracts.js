@@ -4,6 +4,7 @@ const utils = require('../utils/contracts.js');
 
 module.exports = {
     getContractDetails: getContractDetails,
+    deployCampaigns: deployCampaigns,
     deployCampaignToken: deployCampaignToken,
     deployCampaignTokenFundraiser: deployCampaignTokenFundraiser
 };
@@ -21,6 +22,15 @@ function getContractDetails(req, res) {
 function deployCampaignToken(req, res) {
     var amount = req.swagger.params.body.value.amount;
     utils.createCampaignToken(amount).then((result) =>{ 
+        res.json({address: result.contract._address, abi: result.abi});
+    }).catch(result => {
+        res.status(400);
+        res.json({error: result.error, message: result.message});
+    });
+}
+
+function deployCampaigns(req, res) {
+    utils.createCampaigns().then((result) =>{ 
         res.json({address: result.contract._address, abi: result.abi});
     }).catch(result => {
         res.status(400);

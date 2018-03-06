@@ -12,6 +12,7 @@ var account = conf.defaultAccount || web3.eth.coinbase;
 module.exports = {
     createContract: createContract,
     getCampaignHash: getCampaignHash,
+    createCampaigns: createCampaigns,
     createCampaignToken: createCampaignToken,
     getContractDetails: getContractDetails,
     createCampaignTokenFundraiser: createCampaignTokenFundraiser
@@ -40,6 +41,10 @@ function getContractDetails(contractName) {
 
 async function getBalance() {
     await web3.eth.getBalance(account);
+}
+
+async function createCampaigns() {
+    return deployContract("Campaigns", []);
 }
 
 async function createCampaignTokenFundraiser(address) {
