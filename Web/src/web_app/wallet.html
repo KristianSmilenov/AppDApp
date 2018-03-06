@@ -1,76 +1,128 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Project Olympus</title>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/site.css" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Olympus</title>
 
-    </head>
-    <body>
-        <div id="app">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css" />
 
-            <button v-on:click="createCampaign">Create campaign</button><br/>
-            <span>Campaign details: {{campaignDetails}}</span><br/>
+</head>
 
-            <button v-on:click="contributeToCampaign">Contribute to campaign</button>
+<body>
+    <div id="app">
 
+        <button v-on:click="createCampaign">Create campaign</button>
+        <span>Campaign details: {{campaignDetails}}</span>
+        <br/>
+
+        <button v-on:click="contributeToCampaign">Deploy campaign contract</button>
+        <span>Campaign contract: {{contracts.campaignInfo.address}}</span>
+        <br/>
+        <button v-on:click="getMetaMaskAccount()">Load MetaMask account</button>
+        <span>Wallet address: {{userAddress}} </span><br/>
+        <button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button>
+        <span>Token fundraiser contract: {{contracts.campaignTokenFundraiserInfo.address}}</span>
+
+
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+
+
+
+
+        <h2>Depricated</h2>
+        <div>
+            <input type="text" v-model="userEntropy" placeholder="Type random text to generate entropy" size="80"></input>
+            <button v-on:click="newWallet()">Create New Wallet</button>
+        </div>
+        <div>
+            <input type="text" v-model="walletSeedWords" placeholder="Enter wallet seed words to restore wallet" size="80"></input>
+            <button v-on:click="setSeed()">Restore wallet</button>
+        </div>
+        <div>
+            <label>Wallet details:</label>
+            </br>
+            <span>Wallet address: {{userAddress}} </span>
+            </br>
+            <span>Details: {{userAddressDetails}} </span>
+            </br>
+            <span>Second address: {{secondUserAddress}} </span>
+            </br>
+            <span>Details: {{secondUserAddressDetails}} </span>
             <div>
-                <input type="text" v-model="userEntropy" placeholder="Type random text to generate entropy" size="80"></input>
-                <button v-on:click="newWallet()">Create New Wallet</button>
-            </div>
-            <div>
-                <input type="text" v-model="walletSeedWords" placeholder="Enter wallet seed words to restore wallet" size="80"></input>
-                <button v-on:click="setSeed()">Restore wallet</button>
-            </div>
-            <div>
-                <label>Wallet details:</label></br>
-                <span>Wallet address: {{userAddress}} </span></br>
-                <span>Details: {{userAddressDetails}} </span></br>
-                <span>Second address: {{secondUserAddress}} </span></br>
-                <span>Details: {{secondUserAddressDetails}} </span>
-                <div><button v-on:click='getBalances()'>Refresh</button></div>
-            </div>
-            <div>
-                <button v-on:click="showSeed()">Show Seed</button>
-            </div>
-
-            <div>
-                <label>Send Ether</label>
-                <div>From: {{userAddress}}</br></div>
-                <div>To: <input type="text" v-model="sendToAddress" size="40"> </input></div>
-                <div>Ether: <input type="text" v-model="sendValueAmount"></div>
-                <div><button v-on:click="sendEth()">Send Ether</button></div>
-            </div>
-
-            <div>
-                <label>Invoke contract function</label>
-                <div>From: {{userAddress}}</br></div>
-
-                <div>Contract Address: <input type="text" size="40" v-model="contractAddr"></input></div>
-                <div>Contract ABI: <input type="text" size="40" v-model="contractAbi"></input></div>
-                <div>Function Name: <input type="text" size="20" v-model="functionName"></input></div>
-                <div>Function Arguments: <input type="text" size="40" v-model="functionArgs"></input></div>
-
-                <div>Ether: <input type="text" v-model="contractValueAmount"></div>
-                <div><button v-on:click="invokeContractFunction()">Invoke function</button></div>
+                <button v-on:click='getBalances()'>Refresh</button>
             </div>
         </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
-        
-        <script src="./lib/web3.min.js"></script>
-        <script src="./lib/lightwallet.js"></script>
-        <script src="./lib/async.js"></script>
-        <script src="./lib/hooked-web3-provider.js"></script>
-        <script src="js/index.js"></script>
+        <div>
+            <button v-on:click="showSeed()">Show Seed</button>
+        </div>
 
-    </body>
+        <div>
+            <label>Send Ether</label>
+            <div>From: {{userAddress}}</br>
+            </div>
+            <div>To:
+                <input type="text" v-model="sendToAddress" size="40"> </input>
+            </div>
+            <div>Ether:
+                <input type="text" v-model="sendValueAmount">
+            </div>
+            <div>
+                <button v-on:click="sendEth()">Send Ether</button>
+            </div>
+        </div>
+
+        <div>
+            <label>Invoke contract function</label>
+            <div>From: {{userAddress}}</br>
+            </div>
+
+            <div>Contract Address:
+                <input type="text" size="40" v-model="contractAddr"></input>
+            </div>
+            <div>Contract ABI:
+                <input type="text" size="40" v-model="contractAbi"></input>
+            </div>
+            <div>Function Name:
+                <input type="text" size="20" v-model="functionName"></input>
+            </div>
+            <div>Function Arguments:
+                <input type="text" size="40" v-model="functionArgs"></input>
+            </div>
+
+            <div>Ether:
+                <input type="text" v-model="contractValueAmount">
+            </div>
+            <div>
+                <button v-on:click="invokeContractFunction()">Invoke function</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
+
+    <script src="./lib/web3.min.js"></script>
+    <script src="./lib/lightwallet.js"></script>
+    <script src="./lib/async.js"></script>
+    <script src="./lib/hooked-web3-provider.js"></script>
+    <script src="js/index.js"></script>
+
+</body>
+
 </html>

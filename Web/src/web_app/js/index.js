@@ -1,4 +1,3 @@
-'use strict';
 (function () {
   var global_keystore;
   function startApp() {
@@ -20,21 +19,31 @@
         functionArgs: '',
         contractValueAmount: '',
         config: {
-          gasPrice: 18000000000,
-          gas: 50000,
+          gasPrice: 100000000000, //(100 Shannon)
+          gas: 4712388,
           salt: "m/0'/0'/0'",
           ethToWei: 1.0e18,
           ethHost: "http://localhost:8545"
         },
         api: {
           base: "http://localhost:10010",
-          campaigns: "/campaigns"
+          campaigns: "/campaigns",
+          contracts: "/contracts"
         },
-        campaignDetails: {}
+        campaignDetails: {},
+        contracts: {
+          campaignInfo: { address: "", abi: [] },
+          campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "" }
+        }
       },
       methods: {
-        contributeToCampaign: function () {
-          alert("TODO: Use the REST API to deploy the contract and get address and ABI");
+        getMetaMaskAccount: function () {
+          var self = this;
+            web3.eth.getAccounts(function (error, accounts) {
+              if (!error && accounts.length > 0) {
+                self.userAddress = accounts[0];
+              }
+          });
         },
         newWallet: function () {
           let extraEntropy = this.userEntropy;
@@ -53,7 +62,7 @@
             global_keystore = keystore
             self.newAddresses(password);
             var ethHost = self.config.ethHost;
-            self.setWeb3Provider(global_keystore, ethHost);
+            //self.setWeb3Provider(global_keystore, ethHost);
             self.getBalances();
           })
         },
@@ -81,11 +90,14 @@
           })
         },
         setWeb3Provider: function (keystore, ethHost) {
-          var web3Provider = new HookedWeb3Provider({
-            host: ethHost,
-            transaction_signer: keystore
-          });
-          web3.setProvider(web3Provider);
+          //web3.setProvider(ethHost);
+          //var web3 = new Web3(Web3.givenProvider || ethHost);
+          // depricated
+          // var web3Provider = new HookedWeb3Provider({
+          //   host: ethHost,
+          //   transaction_signer: keystore
+          // });
+          // web3.setProvider(web3Provider);
         },
         setSeed: function () {
           var self = this;
@@ -99,7 +111,7 @@
             self.walletSeedWords = '';
             self.newAddresses(password);
             var ethHost = self.config.ethHost;
-            self.setWeb3Provider(global_keystore, ethHost);
+            //self.setWeb3Provider(global_keystore, ethHost);
             self.getBalances();
           })
         },
@@ -144,6 +156,15 @@
           args.push(callback);
           contract[this.functionName].apply(this, args);
         },
+        deployCampaignContract: function () {
+          // make sure campaign contract is deployed
+          var self = this;
+          this.$http.get(this.api.base + this.api.contracts + '/campaign').then(response => {
+            self.contracts.campaignInfo = response.body;
+          }, response => {
+            alert("Error deploying Campaigns contract.");
+          });
+        },
         createCampaign: function () {
           var campaignData = {
             name: "Smartcontainers - " + Math.random(),
@@ -162,12 +183,75 @@
           this.$http.post(this.api.base + this.api.campaigns, campaignData).then(response => {
             self.campaignDetails = response.body;
           }, response => {
-            alert("Error creating campaign.")
+            alert("Error creating campaign.");
           });
+        },
+        deployCrowdfundingContract: function () {
+          // deploy crowdfunding contract with campaignId and beneficiaryAddress from campaign
+          var self = this;
+          this.$http.get(this.api.base + this.api.contracts + '/CampaignTokenFundraiser').then(response => {
+            var response = response.body;
+            self.contracts.campaignTokenFundraiserInfo.bytecode = response.bytecode;
+            self.contracts.campaignTokenFundraiserInfo.abi = response.abi;
+            self.deployContract(response.bytecode, response.abi, [self.userAddress]).then((result) => {
+              self.contracts.campaignTokenFundraiserInfo.address = result.contract._address;
+              self.contracts.campaignTokenFundraiserInfo.abi = result.abi;
+            }).catch(result => {
+              alert(result.message);
+            });
+          }, response => {
+            alert("Error getting token fundraiser contract info.");
+          });
+        },
+        deployContract: function (bytecode, abi, param) {
+          var self = this;
+          return new Promise((resolve, reject) => {
+            var contract = new web3.eth.Contract(abi);
+            contract.deploy({
+              data: bytecode,
+              arguments: param
+            })
+              .send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, transactionHash) {
+                if (error) { reject({ error: true, message: error.message }); }
+              })
+              .on('error', function (error) { reject({ error: true, message: error.message }); })
+              .on('transactionHash', function (transactionHash) { console.log('info', 'TransactionHash: ' + transactionHash); })
+              .on('confirmation', function (confirmationNumber, receipt) { })
+              .then(function (newContractInstance) {
+                console.log('info', newContractInstance.options.address);
+                resolve({ contract: newContractInstance, abi: abi });
+              });
+          }, function (error) {
+            reject({ error: true, message: error.message });
+          });
+        },
+        publishCampaignOnBlockchain: function () {
+          // add crowdfunding address to the campaign, create the hash and publish it on blockchain
+        },
+        contributeToCampaign: function () {
+          // transfer funds to the crowdfunding address
+          this.deployCampaignContract();
         }
       }
     });
   }
+
+  if (typeof web3 !== 'undefined') {
+    console.log('Web3 injected browser: OK.')
+    window.web3 = new Web3(window.web3.givenProvider);
+  } else {
+    //TODO: implement normal wallet
+    console.log('No web3? You should consider trying MetaMask!');
+    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+  }
+
+  var account = web3.eth.accounts[0];
+  var accountInterval = setInterval(function () {
+    if (web3.eth.accounts[0] !== account) {
+      account = web3.eth.accounts[0];
+      updateInterface();
+    }
+  }, 100);
 
   startApp();
 

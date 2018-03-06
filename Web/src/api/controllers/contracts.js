@@ -30,6 +30,7 @@ function deployCampaignToken(req, res) {
 }
 
 function deployCampaigns(req, res) {
+    //TODO: check if contract is already deployed, if yes do not deploy again but return address
     utils.createCampaigns().then((result) =>{ 
         res.json({address: result.contract._address, abi: result.abi});
     }).catch(result => {

@@ -37,6 +37,9 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
     // Number of tokens sold during the fundraiser.
     uint private tokensSold;
 
+    // Keep double relation between fundraiser contract and contribution campaign
+    string private campaignId;
+
     /**
      * @dev The event fires every time a new buyer enters the fundraiser.
      *
@@ -100,6 +103,19 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
         beneficiary = _beneficiary;
 
         BeneficiaryChange(_beneficiary);
+    }
+
+    /**
+     * @dev Sets campaign id of the associated fundraiser campaign
+     */
+    function setCampaignId(string _campaignId) public onlyOwner {
+        require(!finalized);
+        
+        campaignId = _campaignId;
+    }
+
+    function getCampaignId() public view returns (string) {
+        return campaignId;
     }
 
     /**

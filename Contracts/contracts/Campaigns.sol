@@ -7,20 +7,20 @@ contract Campaigns {
             string hashHex;
       }
 
-      mapping(uint8 => Campaign) public campaigns;
+      mapping(string => Campaign) private campaigns;
   
       function Campaigns() public {
       }
 
-      function getCampaignHash(uint8 id) view public returns (string) {
+      function getCampaignHash(string id) view public returns (string) {
             return  campaigns[id].hashHex;
       }
 
-      function addCampaign(uint8 id, bool isActive, string campaignHash) public {
+      function addCampaign(string id, bool isActive, string campaignHash) public {
             campaigns[id] = Campaign(isActive, campaignHash);
       }
 
-      function closeCampaign(uint8 id) public {
+      function closeCampaign(string id) public {
           campaigns[id].isActive = false;
       }
 }
