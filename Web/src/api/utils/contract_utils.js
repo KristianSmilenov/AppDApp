@@ -13,16 +13,29 @@ module.exports = {
     createContract: createContract,
     getCampaignHash: getCampaignHash,
     createCampaignToken: createCampaignToken,
+    getContractDetails: getContractDetails,
     createCampaignTokenFundraiser: createCampaignTokenFundraiser
 };
 
-function getAbi(contractName) {
+function getCompiledContractDefinition(contractName) {
     return new Promise((resolve, reject) => {
         fs.readFile('./Contracts/build/contracts/' + contractName + '.json', 'utf8', function (error, result) {
             resolve({ error: error, result: result });
         });
     });
 
+}
+
+function getContractDetails(contractName) {
+    return new Promise((resolve, reject) => {
+        getCompiledContractDefinition(contractName).then((data) => {
+            var abi = JSON.parse(data.result).abi;
+            var bytecode = JSON.parse(data.result).bytecode;
+            resolve({abi: abi, bytecode: bytecode});
+        }, function (error) {
+            reject({ error: true, message: error.message });
+        })
+    });
 }
 
 async function getBalance() {
@@ -41,7 +54,7 @@ async function deployContract(contractName, arguments) {
 
     winston.log('info', 'Deploying ' + contractName + ' contract');
     return new Promise((resolve, reject) => {
-        getAbi(contractName).then((data) => {
+        getCompiledContractDefinition(contractName).then((data) => {
 
             var abi = JSON.parse(data.result).abi;
             var bytecode = JSON.parse(data.result).bytecode;
@@ -68,7 +81,7 @@ async function deployContract(contractName, arguments) {
 
 function createContract(contractName, address) {
     return new Promise((resolve, reject) => {
-        getAbi(contractName).then((data) => {
+        getCompiledContractDefinition(contractName).then((data) => {
             var abi = JSON.parse(data.result).abi;
 
             resolve({

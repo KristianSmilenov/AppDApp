@@ -17,6 +17,29 @@ consumes:
 produces:
   - application/json
 paths:
+  /contracts/{contractName}:
+    x-swagger-router-controller: contracts
+    get:
+      description: Returns ABI and Bytecode of compiled contract
+      operationId: getContractDetails
+      tags: 
+        - Contracts
+      parameters:
+        - name: contractName
+          in: path
+          description: The name of the contract
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ContractDetailsResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
   /contracts/campaign-token:
     x-swagger-router-controller: contracts
     post:
@@ -250,6 +273,18 @@ definitions:
       address:
         type: string
   
+  ContractDetailsResponse:
+    required:
+      - bytecode
+      - abi
+    properties: 
+      bytecode:
+        type: string
+      abi:
+        type: array
+        items: 
+          $ref: "#/definitions/ABI"
+
   ContractDeployedResponse:
     required:
       - address

@@ -3,9 +3,20 @@
 const utils = require('../utils/contract_utils.js');
 
 module.exports = {
+    getContractDetails: getContractDetails,
     deployCampaignToken: deployCampaignToken,
     deployCampaignTokenFundraiser: deployCampaignTokenFundraiser
 };
+
+function getContractDetails(req, res) {
+    var contractName = req.swagger.params.contractName.value;
+    utils.getContractDetails(contractName).then((result) =>{ 
+        res.json({bytecode: result.bytecode, abi: result.abi});
+    }).catch(result => {
+        res.status(400);
+        res.json({error: result.error, message: result.message});
+    });
+}
 
 function deployCampaignToken(req, res) {
     var amount = req.swagger.params.body.value.amount;
