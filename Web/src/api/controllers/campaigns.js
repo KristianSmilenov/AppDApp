@@ -1,6 +1,6 @@
 'use strict';
 
-const storage = require('../utils/campaigns_storage.js');
+const storage = require('../utils/campaigns.js');
 const authTokens = ['123', 'admin', 'pass', '123qwe', 'string'];
 
 module.exports = {
@@ -32,7 +32,7 @@ function addCampaign(req, res) {
     var campaign = req.swagger.params.body.value;
     extendCampaignData(campaign);
     storage.saveCampaign(campaign)
-        .then(() => res.json())
+        .then((campaign) => res.json(getCampaignModel(campaign)))
         .catch(err => {
             res.status(400);
             res.json({ error: true, message: err.message });
@@ -54,7 +54,7 @@ function getCampaignsResponse(campaigns) {
     return result;
 }
 
-function getCampaignModel(currentCampaign){
+function getCampaignModel(currentCampaign) {
     return {
         "id": currentCampaign._id.toString(),
         "name": currentCampaign.name,

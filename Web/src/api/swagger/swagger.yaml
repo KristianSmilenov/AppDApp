@@ -126,6 +126,8 @@ paths:
       responses:
         "200":
           description: Success
+          schema:
+            $ref: "#/definitions/Campaign"
             
         default:
           description: Error

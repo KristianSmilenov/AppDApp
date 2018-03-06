@@ -21,11 +21,13 @@ const storage = {
         storage.init().then(() => {
             storage.db
                 .collection('campaigns')
-                .insertOne(campaign, function (err, res) {
-                    console.log('error', 'Error saving a campaign to db.', err);
-                    if (err) return reject(err);
-                    console.log('info', 'Campaign created');
-                    resolve();
+                .insertOne(campaign, function (err, response) {
+                    if (err) {
+                        console.log('error', 'Error saving a campaign to db.', err);
+                        return reject(err);
+                    }
+                    console.log('info', 'Campaign created: ' + response.ops[0]._id);
+                    resolve(response.ops[0]);
                 });
         });
     }).catch(err => {

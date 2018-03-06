@@ -25,7 +25,12 @@
           salt: "m/0'/0'/0'",
           ethToWei: 1.0e18,
           ethHost: "http://localhost:8545"
-        }
+        },
+        api: {
+          base: "http://localhost:10010",
+          campaigns: "/campaigns"
+        },
+        campaignDetails: {}
       },
       methods: {
         contributeToCampaign: function () {
@@ -112,7 +117,7 @@
             from: this.userAddress, to: this.sendToAddress, value: weiValue,
             gasPrice: self.config.gasPrice, gas: self.config.gas
           }, function (err, txhash) {
-            if(err && err.message) {
+            if (err && err.message) {
               alert('error: ' + err.message);
             } else {
               alert('Successfully sent transcation. Txhash: ' + txhash);
@@ -130,7 +135,7 @@
           });
 
           var callback = function (err, result) {
-            if(err && err.message) {
+            if (err && err.message) {
               alert('error: ' + err.message);
             } else {
               alert('Invocation result: ' + result);
@@ -138,6 +143,27 @@
           }
           args.push(callback);
           contract[this.functionName].apply(this, args);
+        },
+        createCampaign: function () {
+          var campaignData = {
+            name: "Smartcontainers - " + Math.random(),
+            type: "Presale",
+            description: "Temperature sensitive logistics. Revolutionised",
+            startDate: 1520348640,
+            endDate: 1520363119,
+            bonus: 30,
+            tokenName: "SMARC",
+            conversionRate: 9000,
+            tokensHardCap: 71250,
+            beneficiaryAddress: this.userAddress //"0xe0d6f0051cfca75dec00881e247ebdb35bf34cd7"
+          };
+
+          var self = this;
+          this.$http.post(this.api.base + this.api.campaigns, campaignData).then(response => {
+            self.campaignDetails = response.body;
+          }, response => {
+            alert("Error creating campaign.")
+          });
         }
       }
     });

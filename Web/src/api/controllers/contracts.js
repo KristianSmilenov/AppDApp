@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require('../utils/contract_utils.js');
+const utils = require('../utils/contracts.js');
 
 module.exports = {
     getContractDetails: getContractDetails,
@@ -40,7 +40,7 @@ function deployCampaignTokenFundraiser(req, res) {
 
 /*
 (async function() {
-    var h = require('./api/helpers/campaigns_contracts_helper.js');
+    var h = require('./api/utils/contracts.js');
     var contractAddress = '0x30753e4a8aad7f8597332e813735def5dd395028';
     var contract = await h.createContract('Campaigns', contractAddress);
     var res = await h.getCampaignHash(contract, 2);
@@ -48,7 +48,7 @@ function deployCampaignTokenFundraiser(req, res) {
   return;
   */
  // --- TEST --- 
-// var h = require('../utils/contract_utils.js');
+// var h = require('../utils/contracts.js');
 // var contractAddress = '0x30753e4a8aad7f8597332e813735def5dd395028';
 // var contract = h.createContract('Campaigns', contractAddress).then(result => {
 //     debugger;
