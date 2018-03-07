@@ -6,8 +6,15 @@ module.exports = {
     getContractDetails: getContractDetails,
     deployCampaigns: deployCampaigns,
     deployCampaignToken: deployCampaignToken,
-    deployCampaignTokenFundraiser: deployCampaignTokenFundraiser
+    deployCampaignTokenFundraiser: deployCampaignTokenFundraiser,
+    publishCampaign: publishCampaign
 };
+
+function publishCampaign(req, res) {
+    var campaignId = req.swagger.params.id.value;
+    // should we publish this on server side?
+    res.json();
+}
 
 function getContractDetails(req, res) {
     var contractName = req.swagger.params.contractName.value;

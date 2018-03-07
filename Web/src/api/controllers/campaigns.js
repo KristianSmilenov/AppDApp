@@ -1,12 +1,14 @@
 'use strict';
 
+const crypto = require('crypto');
 const storage = require('../utils/campaigns.js');
 const authTokens = ['123', 'admin', 'pass', '123qwe', 'string'];
+const secret = 'asjdhafjajgljskegkdgndfg';
 
 module.exports = {
     getCampaigns: getCampaigns,
     getCampaign: getCampaign,
-    addCampaign: addCampaign
+    createCampaign: createCampaign
 };
 
 function getCampaigns(req, res) {
@@ -18,6 +20,17 @@ function getCampaigns(req, res) {
     });
 }
 
+// function updateCampaign(req, res) {
+//     var campaignId = req.swagger.params.id.value;
+//     var campaign = req.swagger.params.body.value;
+//     storage.updateCampaign(campaignId, campaign).then((campaign) => {
+//         res.json(getCampaignModel(campaign));
+//     }).catch(err => {
+//         res.status(400);
+//         res.json({ error: true, message: err });
+//     });
+// }
+
 function getCampaign(req, res) {
     var campaignId = req.swagger.params.id.value;
     storage.getCampaignById(campaignId).then((campaign) => {
@@ -28,22 +41,33 @@ function getCampaign(req, res) {
     });
 }
 
-function addCampaign(req, res) {
+function createCampaign(req, res) {
     var campaign = req.swagger.params.body.value;
-    extendCampaignData(campaign);
+    setCampaignDataHash(campaign);
     storage.saveCampaign(campaign)
-        .then((campaign) => res.json(getCampaignModel(campaign)))
+        .then((campaign) => {
+            var campaignData = getCampaignModel(campaign);
+            // update hash with campaignId
+            setCampaignDataHash(campaignData);
+            storage.updateCampaign(campaignData.id, campaignData).then((campaign) => {
+                res.json(getCampaignModel(campaign));
+            }).catch(err => {
+                res.status(400);
+                res.json({ error: true, message: err });
+            });
+        })
         .catch(err => {
             res.status(400);
             res.json({ error: true, message: err.message });
         });
 }
 
-function extendCampaignData(campaign) {
-    campaign.campaignContractAddress = "";
-    campaign.campaignContractABI = [];
-    campaign.campaignDataHash = "";
-    campaign.isActive = false;
+function setCampaignDataHash(campaign) {
+    delete campaign.campaignDataHash;
+    const hash = crypto.createHmac('sha256', secret)
+        .update(JSON.stringify(campaign))
+        .digest('hex');
+    campaign.campaignDataHash = hash;
 }
 
 function getCampaignsResponse(campaigns) {
@@ -67,9 +91,7 @@ function getCampaignModel(currentCampaign) {
         "conversionRate": currentCampaign.conversionRate,
         "tokensHardCap": currentCampaign.tokensHardCap,
         "beneficiaryAddress": currentCampaign.beneficiaryAddress,
-        "campaignContractAddress": currentCampaign.campaignContractAddress,
-        "campaignContractABI": currentCampaign.campaignContractABI,
-        "campaignDataHash": currentCampaign.campaignDataHash,
-        "isActive": currentCampaign.isActive
+        "fundraiserContractAddress": currentCampaign.fundraiserContractAddress,
+        "campaignDataHash": currentCampaign.campaignDataHash
     };
 }

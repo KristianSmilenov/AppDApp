@@ -88,7 +88,6 @@ function createContract(contractName, address) {
     return new Promise((resolve, reject) => {
         getCompiledContractDefinition(contractName).then((data) => {
             var abi = JSON.parse(data.result).abi;
-
             resolve({
                 contract: new web3.eth.Contract(abi, address, {
                     from: account,

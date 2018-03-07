@@ -19,7 +19,7 @@
         functionArgs: '',
         contractValueAmount: '',
         config: {
-          gasPrice: 50000000000, //(50 Shannon)
+          gasPrice: 5000000000, //(5 Shannon)
           gas: 4712388,
           salt: "m/0'/0'/0'",
           ethToWei: 1.0e18,
@@ -33,9 +33,11 @@
         campaignDetails: {},
         contracts: {
           campaignInfo: { address: "", abi: [] },
-          campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "" }
+          campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "", campaignHash: "" }
         },
-        campaignContributionTx: ""
+        campaignContributionTx: "",
+        campaignBlockchainReceipt: "",
+        campaignBlockchainHash: ""
       },
       methods: {
         getMetaMaskAccount: function () {
@@ -137,11 +139,11 @@
             }
           })
         },
-        invokeContractFunction: function () {
+        invokeContractFunction: function (abi, address, param) {
           var self = this;
           var weiValue = parseFloat(this.contractValueAmount) * self.config.ethToWei;
-          var contract = web3.eth.contract(JSON.parse(this.contractAbi)).at(this.contractAddr);
-          var args = JSON.parse('[' + this.functionArgs + ']');
+          var contract = web3.eth.Contract(abi).at(address);
+          var args = JSON.parse('[' + this.param + ']');
           args.push({
             from: this.userAddress, value: weiValue,
             gasPrice: self.config.gasPrice, gas: self.config.gas
@@ -157,7 +159,7 @@
           args.push(callback);
           contract[this.functionName].apply(this, args);
         },
-        deployCampaignContract: function () {
+        deployCampaignContracts: function () {
           // make sure campaign contract is deployed
           var self = this;
           this.$http.get(this.api.base + this.api.contracts + '/campaign').then(response => {
@@ -177,7 +179,8 @@
             tokenName: "SMARC",
             conversionRate: 9000,
             tokensHardCap: 71250,
-            beneficiaryAddress: this.userAddress //"0xe0d6f0051cfca75dec00881e247ebdb35bf34cd7"
+            beneficiaryAddress: this.userAddress,
+            fundraiserContractAddress: this.contracts.campaignTokenFundraiserInfo.address
           };
 
           var self = this;
@@ -225,26 +228,44 @@
             reject({ error: true, message: error.message });
           });
         },
-        publishCampaignOnBlockchain: function () {
-          // add crowdfunding address to the campaign, create the hash and publish it on blockchain
-
+        setCrowdfundingContractCampaign: function () {
           // set fundraising contract, campaignId
-          // update campaign with fundraising contract address
-          // calculate campaign hash
-          // publish campaign in blockchain
-          //this.campaignDetails
-          //this.contracts.campaignTokenFundraiserInfo
-          //this.contracts.campaignInfo
           var self = this;
-          var fundraiser = self.contracts.campaignTokenFundraiserInfo.instance;
-          fundraiser.methods.setCampaignId(self.campaignDetails.id).send(
+          var fundraiserContract = self.contracts.campaignTokenFundraiserInfo.instance;
+          fundraiserContract.methods.setCampaignId(self.campaignDetails.id).send(
             { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
               if (!error) {
-                fundraiser.methods.getCampaignId().call(
+                fundraiserContract.methods.getCampaignId().call(
                   { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
                     self.contracts.campaignTokenFundraiserInfo.campaignId = result;
                   });
               }
+            });
+        },
+        publishCampaignOnBlockchain: function () {
+          // add crowdfunding address to the campaign, create the hash and publish it on blockchain
+          var self = this;
+          var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
+          self.contracts.campaignInfo.instance = campaignContract;
+
+          // function addCampaign(string id, bool isActive, string campaignHash) public {
+          campaignContract.methods.addCampaign(self.campaignDetails.id, false, self.campaignDetails.campaignDataHash)
+          .send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice })
+          .on('confirmation', function (confirmationNumber, receipt) {
+            self.campaignBlockchainReceipt = receipt;
+          })
+          .on('error', console.error);
+          
+        },
+        getCampaignBlockchainInfo: function () {
+          // get campaign hash from blockchain
+          var self = this;
+          var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
+          self.contracts.campaignInfo.instance = campaignContract;
+
+          campaignContract.methods.getCampaignHash(self.campaignDetails.id).call(
+            { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+              self.campaignBlockchainHash = result;
             });
         },
         contributeToCampaign: function () {

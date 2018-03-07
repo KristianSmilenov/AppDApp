@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectId; 
+const ObjectId = require('mongodb').ObjectId;
 
 const storage = {
     db: null,
@@ -39,9 +39,7 @@ const storage = {
             storage.db.collection('campaigns')
                 .find({})
                 .toArray((err, result) => {
-                    if (err) {
-                        return reject(err);
-                    }
+                    if (err) { return reject(err); }
                     return resolve(result);
                 });
         });
@@ -49,12 +47,30 @@ const storage = {
     getCampaignById: (idString) => new Promise((resolve, reject) => {
         storage.init().then(() => {
             storage.db.collection('campaigns')
-                .findOne({ "_id" : ObjectId(idString) }, function (err, result) {
-                    if (err) throw err;
+                .findOne({ "_id": ObjectId(idString) }, function (err, result) {
+                    if (err) { return reject(err); }
                     return resolve(result);
                 });
         });
     }),
+    updateCampaign: (idString, campaign) => new Promise((resolve, reject) => {
+        //TODO: update also the other fields
+        storage.init().then(() => {
+            storage.db.collection('campaigns')
+                .findOneAndUpdate(
+                    { "_id": ObjectId(idString) },
+                    {
+                        $set:
+                            {
+                                beneficiaryAddress: campaign.beneficiaryAddress,
+                                fundraiserContractAddress: campaign.fundraiserContractAddress
+                            }
+                    }, function (err, result) {
+                        if (err) { return reject(err); }
+                        return resolve(result.value);
+                    });
+        });
+    })
 };
 
 module.exports = storage;

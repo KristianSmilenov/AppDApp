@@ -106,6 +106,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  
   /campaigns:
     x-swagger-router-controller: campaigns
     get:
@@ -132,7 +133,7 @@ paths:
 
     post:
       description: Create a campaign
-      operationId: addCampaign
+      operationId: createCampaign
       tags: 
         - Data
       parameters:
@@ -171,12 +172,36 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Campaign"
-            
-        # responses may fall through to errors
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    # put:
+    #   description: Update campaign data
+    #   operationId: updateCampaign
+    #   tags: 
+    #     - Data
+    #   parameters:
+    #     - name: id
+    #       in: path
+    #       description: The campaign id
+    #       required: true
+    #       type: string
+    #     - name: body
+    #       in: body
+    #       description: Campaign data
+    #       required: true
+    #       schema:
+    #         $ref: "#/definitions/Campaign"
+    #   responses:
+    #     "200":
+    #       description: Success
+    #       schema:
+    #         $ref: "#/definitions/Campaign"
+    #     default:
+    #       description: Error
+    #       schema:
+    #         $ref: "#/definitions/ErrorResponse"
 
 definitions:
     
@@ -198,7 +223,6 @@ definitions:
   Campaign:
     required:
       - id
-      - isActive
       - name
       - type
       - description
@@ -209,14 +233,11 @@ definitions:
       - conversionRate
       - tokensHardCap
       - beneficiaryAddress
-      - campaignContractAddress
-      - campaignContractABI
+      - fundraiserContractAddress
       - campaignDataHash
     properties: 
       id:
         type: string
-      isActive:
-        type: boolean
       name:
         type: string
       type:
@@ -237,12 +258,8 @@ definitions:
         type: number
       beneficiaryAddress:
         type: string
-      campaignContractAddress:
+      fundraiserContractAddress:
         type: string
-      campaignContractABI:
-        type: array
-        items: 
-          $ref: "#/definitions/ABI"
       campaignDataHash:
         type: string
 
@@ -258,6 +275,7 @@ definitions:
       - conversionRate
       - tokensHardCap
       - beneficiaryAddress
+      - fundraiserContractAddress
     properties: 
       name:
         type: string
@@ -278,6 +296,8 @@ definitions:
       tokensHardCap:
         type: number
       beneficiaryAddress:
+        type: string
+      fundraiserContractAddress:
         type: string
 
   DeployCampaignTokenRequest:
