@@ -114,12 +114,15 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
         campaignId = _campaignId;
     }
 
+    /**
+     * @dev Gets campaign id of the associated fundraiser campaign
+     */
     function getCampaignId() public view returns (string) {
         return campaignId;
     }
 
     /**
-     * @dev Sets converstion rate of 1 ETH to TOKEN. Can only be changed before the fundraiser starts.
+     * @dev Sets conversion rate of 1 ETH to TOKEN. Can only be changed before the fundraiser starts.
      *
      * @param _conversionRate The new number of Tokens per 1 ETH.
      */
