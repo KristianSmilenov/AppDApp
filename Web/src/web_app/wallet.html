@@ -18,16 +18,21 @@
         <span>Campaign details: {{campaignDetails}}</span>
         <br/>
 
-        <button v-on:click="contributeToCampaign">Deploy campaign contract</button>
+        <button v-on:click="deployCampaignContract">Deploy campaign contract</button>
         <span>Campaign contract: {{contracts.campaignInfo.address}}</span>
         <br/>
         <button v-on:click="getMetaMaskAccount()">Load MetaMask account</button>
         <span>Wallet address: {{userAddress}} </span><br/>
+        
         <button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button>
-        <span>Token fundraiser contract: {{contracts.campaignTokenFundraiserInfo.address}}</span>
+        <span>Token fundraiser contract: {{contracts.campaignTokenFundraiserInfo.address}}</span><br/>
 
+        <button v-on:click="publishCampaignOnBlockchain()">Publish campaign data</button>
+        <span>Fundraiser campaign: {{contracts.campaignTokenFundraiserInfo.campaignId}}</span><br/>
+        
+        <button v-on:click="contributeToCampaign()">Contribute to campaign</button>
+        <span>Contribution tx: </span>
 
-
         <br/>
         <br/>
         <br/>
@@ -36,10 +41,6 @@
         <br/>
         <br/>
         <br/>
-
-
-
-
 
         <h2>Depricated</h2>
         <div>

@@ -33,16 +33,16 @@
         campaignDetails: {},
         contracts: {
           campaignInfo: { address: "", abi: [] },
-          campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "" }
+          campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "" }
         }
       },
       methods: {
         getMetaMaskAccount: function () {
           var self = this;
-            web3.eth.getAccounts(function (error, accounts) {
-              if (!error && accounts.length > 0) {
-                self.userAddress = accounts[0];
-              }
+          web3.eth.getAccounts(function (error, accounts) {
+            if (!error && accounts.length > 0) {
+              self.userAddress = accounts[0];
+            }
           });
         },
         newWallet: function () {
@@ -196,6 +196,7 @@
             self.deployContract(response.bytecode, response.abi, [self.userAddress]).then((result) => {
               self.contracts.campaignTokenFundraiserInfo.address = result.contract._address;
               self.contracts.campaignTokenFundraiserInfo.abi = result.abi;
+              self.contracts.campaignTokenFundraiserInfo.instance = result.contract;
             }).catch(result => {
               alert(result.message);
             });
@@ -215,8 +216,6 @@
                 if (error) { reject({ error: true, message: error.message }); }
               })
               .on('error', function (error) { reject({ error: true, message: error.message }); })
-              .on('transactionHash', function (transactionHash) { console.log('info', 'TransactionHash: ' + transactionHash); })
-              .on('confirmation', function (confirmationNumber, receipt) { })
               .then(function (newContractInstance) {
                 console.log('info', newContractInstance.options.address);
                 resolve({ contract: newContractInstance, abi: abi });
@@ -227,10 +226,41 @@
         },
         publishCampaignOnBlockchain: function () {
           // add crowdfunding address to the campaign, create the hash and publish it on blockchain
+
+          // set fundraising contract, campaignId
+          // update campaign with fundraising contract address
+          // calculate campaign hash
+          // publish campaign in blockchain
+          //this.campaignDetails
+          //this.contracts.campaignTokenFundraiserInfo
+          //this.contracts.campaignInfo
+          var self = this;
+          var fundraiser = self.contracts.campaignTokenFundraiserInfo.instance;
+          fundraiser.methods.setCampaignId(self.campaignDetails.id).send(
+            { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+              if (!error) {
+                fundraiser.methods.getCampaignId().call(
+                  { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+                    self.contracts.campaignTokenFundraiserInfo.campaignId = result;
+                  });
+              }
+            });
         },
         contributeToCampaign: function () {
           // transfer funds to the crowdfunding address
-          this.deployCampaignContract();
+          var self = this;
+          var fundraiser = self.contracts.campaignTokenFundraiserInfo.instance;
+          fundraiser.methods.buyTokens().send({ from: self.userAddress, value: 1 * self.config.ethToWei, gas: self.config.gas, gasPrice: self.config.gasPrice })
+            .on('transactionHash', function (hash) {
+              debugger;
+            })
+            .on('confirmation', function (confirmationNumber, receipt) {
+              debugger;
+            })
+            .on('receipt', function (receipt) {
+              console.log(receipt);
+            })
+            .on('error', console.error);
         }
       }
     });
