@@ -19,7 +19,7 @@
         functionArgs: '',
         contractValueAmount: '',
         config: {
-          gasPrice: 100000000000, //(100 Shannon)
+          gasPrice: 50000000000, //(50 Shannon)
           gas: 4712388,
           salt: "m/0'/0'/0'",
           ethToWei: 1.0e18,
@@ -34,7 +34,8 @@
         contracts: {
           campaignInfo: { address: "", abi: [] },
           campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "" }
-        }
+        },
+        campaignContributionTx: ""
       },
       methods: {
         getMetaMaskAccount: function () {
@@ -252,10 +253,10 @@
           var fundraiser = self.contracts.campaignTokenFundraiserInfo.instance;
           fundraiser.methods.buyTokens().send({ from: self.userAddress, value: 1 * self.config.ethToWei, gas: self.config.gas, gasPrice: self.config.gasPrice })
             .on('transactionHash', function (hash) {
-              debugger;
+              self.campaignContributionTx = hash;
             })
             .on('confirmation', function (confirmationNumber, receipt) {
-              debugger;
+              self.campaignContributionTx = receipt;
             })
             .on('receipt', function (receipt) {
               console.log(receipt);
