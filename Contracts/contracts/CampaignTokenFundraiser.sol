@@ -2,11 +2,10 @@ pragma solidity ^0.4.18;
 
 import './libraries/SafeMath.sol';
 import './interfaces/ERC20Basic.sol';
-import './traits/HasOwner.sol';
 
 //  TODO: Move money logic to a Vault contract
 
-contract CampaignTokenFundraiser is HasOwner {
+contract CampaignTokenFundraiser {
    
     using SafeMath for uint;
 
@@ -17,8 +16,19 @@ contract CampaignTokenFundraiser is HasOwner {
         uint weiDonated;
     }
 
+    /** 
+     * @dev Access control modifier that allows only the current owner to call the function.
+     */
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
     // Account balances
     Participant[] participants;
+
+    //The current contract owner
+    address public owner;
 
     //The current state of the campaign
     State public state;
@@ -58,6 +68,7 @@ contract CampaignTokenFundraiser is HasOwner {
         description = _description;
         minCap = _minCap;
         state = State.CollectingFunds;
+        owner = msg.sender;
     }
 
     /**
