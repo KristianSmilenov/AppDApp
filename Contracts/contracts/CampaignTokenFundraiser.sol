@@ -132,13 +132,12 @@ contract CampaignTokenFundraiser {
     }
 
     /**
-     * @dev Close the campaign if `endDate` has passed and if funds have been collected
+     * @dev Close the campaign if `endDate` has not passed and if funds have been collected
      */
     function close() public onlyOwner {
         require(state == State.CollectingFunds);
-        require(now <= endDate);
 
-        if (weiCollected >= minCap) {
+        if (weiCollected >= minCap && now <= endDate) {
             sendTokensToBeneficiary();
         } else {
             invalidate();
