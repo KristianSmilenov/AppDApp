@@ -162,37 +162,37 @@
           args.push(callback);
           contract[this.functionName].apply(this, args);
         },
-        deployCampaignContracts: function () {
-          // make sure campaign contract is deployed
-          var self = this;
-          this.$http.get(this.api.base + this.api.contracts + '/campaign').then(response => {
-            self.contracts.campaignInfo = response.body;
-          }, response => {
-            alert("Error deploying Campaigns contract.");
-          });
-        },
-        createCampaign: function () {
-          var campaignData = {
-            name: "Smartcontainers - " + Math.random(),
-            type: "Presale",
-            description: "Temperature sensitive logistics. Revolutionised",
-            startDate: 1520348640,
-            endDate: 1520363119,
-            bonus: 30,
-            tokenName: "SMARC",
-            conversionRate: 9000,
-            tokensHardCap: 71250,
-            beneficiaryAddress: this.userAddress,
-            fundraiserContractAddress: this.contracts.campaignTokenFundraiserInfo.address
-          };
+        // deployCampaignContracts: function () {
+        //   // make sure campaign contract is deployed
+        //   var self = this;
+        //   this.$http.get(this.api.base + this.api.contracts + '/campaign').then(response => {
+        //     self.contracts.campaignInfo = response.body;
+        //   }, response => {
+        //     alert("Error deploying Campaigns contract.");
+        //   });
+        // },
+        // createCampaign: function () {
+        //   var campaignData = {
+        //     name: "Smartcontainers - " + Math.random(),
+        //     type: "Presale",
+        //     description: "Temperature sensitive logistics. Revolutionised",
+        //     startDate: 1520348640,
+        //     endDate: 1520363119,
+        //     bonus: 30,
+        //     tokenName: "SMARC",
+        //     conversionRate: 9000,
+        //     tokensHardCap: 71250,
+        //     beneficiaryAddress: this.userAddress,
+        //     fundraiserContractAddress: this.contracts.campaignTokenFundraiserInfo.address
+        //   };
 
-          var self = this;
-          this.$http.post(this.api.base + this.api.campaigns, campaignData).then(response => {
-            self.campaignDetails = response.body;
-          }, response => {
-            alert("Error creating campaign.");
-          });
-        },
+        //   var self = this;
+        //   this.$http.post(this.api.base + this.api.campaigns, campaignData).then(response => {
+        //     self.campaignDetails = response.body;
+        //   }, response => {
+        //     alert("Error creating campaign.");
+        //   });
+        // },
         deployCrowdfundingContract: function () {
           // deploy crowdfunding contract with campaignId and beneficiaryAddress from campaign
           var self = this;
@@ -231,46 +231,46 @@
             reject({ error: true, message: error.message });
           });
         },
-        setCrowdfundingContractCampaign: function () {
-          // set fundraising contract, campaignId
-          var self = this;
-          var fundraiserContract = self.contracts.campaignTokenFundraiserInfo.instance;
-          fundraiserContract.methods.setCampaignId(self.campaignDetails.id).send(
-            { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-              if (!error) {
-                fundraiserContract.methods.getCampaignId().call(
-                  { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-                    self.contracts.campaignTokenFundraiserInfo.campaignId = result;
-                  });
-              }
-            });
-        },
-        publishCampaignOnBlockchain: function () {
-          // add crowdfunding address to the campaign, create the hash and publish it on blockchain
-          var self = this;
-          var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
-          self.contracts.campaignInfo.instance = campaignContract;
+        // setCrowdfundingContractCampaign: function () {
+        //   // set fundraising contract, campaignId
+        //   var self = this;
+        //   var fundraiserContract = self.contracts.campaignTokenFundraiserInfo.instance;
+        //   fundraiserContract.methods.setCampaignId(self.campaignDetails.id).send(
+        //     { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        //       if (!error) {
+        //         fundraiserContract.methods.getCampaignId().call(
+        //           { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        //             self.contracts.campaignTokenFundraiserInfo.campaignId = result;
+        //           });
+        //       }
+        //     });
+        // },
+        // publishCampaignOnBlockchain: function () {
+        //   // add crowdfunding address to the campaign, create the hash and publish it on blockchain
+        //   var self = this;
+        //   var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
+        //   self.contracts.campaignInfo.instance = campaignContract;
 
-          // function addCampaign(string id, bool isActive, string campaignHash) public {
-          campaignContract.methods.addCampaign(self.campaignDetails.id, false, self.campaignDetails.campaignDataHash)
-          .send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice })
-          .on('confirmation', function (confirmationNumber, receipt) {
-            self.campaignBlockchainReceipt = receipt;
-          })
-          .on('error', console.error);
+        //   // function addCampaign(string id, bool isActive, string campaignHash) public {
+        //   campaignContract.methods.addCampaign(self.campaignDetails.id, false, self.campaignDetails.campaignDataHash)
+        //   .send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice })
+        //   .on('confirmation', function (confirmationNumber, receipt) {
+        //     self.campaignBlockchainReceipt = receipt;
+        //   })
+        //   .on('error', console.error);
           
-        },
-        getCampaignBlockchainInfo: function () {
-          // get campaign hash from blockchain
-          var self = this;
-          var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
-          self.contracts.campaignInfo.instance = campaignContract;
+        // },
+        // getCampaignBlockchainInfo: function () {
+        //   // get campaign hash from blockchain
+        //   var self = this;
+        //   var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
+        //   self.contracts.campaignInfo.instance = campaignContract;
 
-          campaignContract.methods.getCampaignHash(self.campaignDetails.id).call(
-            { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-              self.campaignBlockchainHash = result;
-            });
-        },
+        //   campaignContract.methods.getCampaignHash(self.campaignDetails.id).call(
+        //     { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        //       self.campaignBlockchainHash = result;
+        //     });
+        // },
         contributeToCampaign: function () {
           // transfer funds to the crowdfunding address
           var self = this;
