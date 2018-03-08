@@ -2,26 +2,30 @@ pragma solidity ^0.4.18;
 
 import "./traits/HasOwner.sol";
 import './libraries/SafeMath.sol';
-import "./interfaces/ERC20TokenInterface.sol";
+import "./interfaces/ERC20Basic.sol";
 
-contract FundSharesToken is HasOwner, ERC20TokenInterface {
+contract FundSharesToken is HasOwner, ERC20Basic {
     using SafeMath for uint;
 
     mapping (address => uint) balances;
 
     string public name;
     string public symbol;
+    uint public totalSupply;
     uint8 public decimals = 18;
-
     // conversion rate 1ETH <> X Tokens
-    uint256 public conversionRate;
+    uint public conversionRate;
 
-    function FundSharesToken(string _name, string _symbol, uint _totalSupply, uint256 _rate) public HasOwner(msg.sender) {
+    function FundSharesToken(string _name, string _symbol, uint _totalSupply, uint _rate) public HasOwner(msg.sender) {
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply;
         balances[owner] = _totalSupply;
         conversionRate = _rate;
+    }
+
+    function totalSupply() public view returns (uint) {
+        return totalSupply;
     }
 
     function balanceOf(address _account) public constant returns (uint balance) {
@@ -39,7 +43,7 @@ contract FundSharesToken is HasOwner, ERC20TokenInterface {
         Transfer(msg.sender, _to, _value);
         return true;
     }
-    
+
     function setConversionRate(uint _rate) public onlyOwner {
         require(conversionRate > 0);
         conversionRate = _rate;
@@ -50,8 +54,8 @@ contract FundSharesToken is HasOwner, ERC20TokenInterface {
     }
 
     function buyTokens() public payable {
-        uint256 weiAmount = msg.value;
-        uint256 _tokenAmount = _getTokensAmount(weiAmount);
+        uint weiAmount = msg.value;
+        uint _tokenAmount = _getTokensAmount(weiAmount);
         _transferPurchasedTokens(msg.sender, _tokenAmount);
     }
 
@@ -65,8 +69,8 @@ contract FundSharesToken is HasOwner, ERC20TokenInterface {
         Transfer(owner, _to, _value);
     } 
 
-    function _getTokensAmount(uint256 _weiAmount) internal view returns (uint256) {
-        uint256 ethAmount = _weiAmount / (1 ether);
+    function _getTokensAmount(uint _weiAmount) internal view returns (uint) {
+        uint ethAmount = _weiAmount / (1 ether);
         return ethAmount.mul(conversionRate);
     }
 

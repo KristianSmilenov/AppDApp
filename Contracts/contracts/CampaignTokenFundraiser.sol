@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
 import './libraries/SafeMath.sol';
-import './interfaces/ERC20TokenInterface.sol';
+import './interfaces/ERC20Basic.sol';
 import './traits/HasOwner.sol';
 
 //  TODO: Move money logic to a Vault contract
@@ -27,7 +27,7 @@ contract CampaignTokenFundraiser is HasOwner {
     uint constant MAX_GAS_PRICE = 50000000000 wei; // 50 gwei/shanon
 
     // The address of the account which will receive the funds gathered by the campaign
-    ERC20TokenInterface public beneficiary;
+    ERC20Basic public beneficiary;
 
     // The number of tokens participants will receive per 1 wei
     uint public conversionRate;
@@ -49,7 +49,7 @@ contract CampaignTokenFundraiser is HasOwner {
      *
      * @param _beneficiary The address which will receive the funds gathered by the campaign
      */
-    function CampaignTokenFundraiser(ERC20TokenInterface _beneficiary,  uint _endDate,
+    function CampaignTokenFundraiser(ERC20Basic _beneficiary,  uint _endDate,
     uint _conversionRate, string _description, uint _minCap) public {
         require(_beneficiary != address(0));
 
