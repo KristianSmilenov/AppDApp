@@ -5,7 +5,7 @@ const utils = require('../utils/contracts.js');
 module.exports = {
     getContractDetails: getContractDetails,
     deployCampaigns: deployCampaigns,
-    deployCampaignToken: deployCampaignToken,
+    deployFundsharesToken: deployFundsharesToken,
     deployCampaignTokenFundraiser: deployCampaignTokenFundraiser,
     publishCampaign: publishCampaign
 };
@@ -26,9 +26,9 @@ function getContractDetails(req, res) {
     });
 }
 
-function deployCampaignToken(req, res) {
+function deployFundsharesToken(req, res) {
     var amount = req.swagger.params.body.value.amount;
-    utils.createCampaignToken(amount).then((result) =>{ 
+    utils.deployFundsharesToken(amount).then((result) =>{ 
         res.json({address: result.contract._address, abi: result.abi});
     }).catch(result => {
         res.status(400);
@@ -55,28 +55,3 @@ function deployCampaignTokenFundraiser(req, res) {
         res.json({error: result.error, message: result.message});
     });
 }
-
-/*
-(async function() {
-    var h = require('./api/utils/contracts.js');
-    var contractAddress = '0x30753e4a8aad7f8597332e813735def5dd395028';
-    var contract = await h.createContract('Campaigns', contractAddress);
-    var res = await h.getCampaignHash(contract, 2);
-  })();
-  return;
-  */
- // --- TEST --- 
-// var h = require('../utils/contracts.js');
-// var contractAddress = '0x30753e4a8aad7f8597332e813735def5dd395028';
-// var contract = h.createContract('Campaigns', contractAddress).then(result => {
-//     debugger;
-//     h.getCampaignHash(result.contract, 2).then(result => {
-//         if (result.error) {
-//             res.status(400);
-//             res.json({ error: true, message: result.error.message });
-//         } else {
-//             res.json(JSON.stringify(result.hash));
-//         }
-//     });;
-// });
-// --- END TEST --- 

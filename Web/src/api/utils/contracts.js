@@ -13,7 +13,7 @@ module.exports = {
     createContract: createContract,
     getCampaignHash: getCampaignHash,
     createCampaigns: createCampaigns,
-    createCampaignToken: createCampaignToken,
+    deployFundsharesToken: deployFundsharesToken,
     getContractDetails: getContractDetails,
     createCampaignTokenFundraiser: createCampaignTokenFundraiser
 };
@@ -51,8 +51,8 @@ async function createCampaignTokenFundraiser(address) {
     return deployContract("CampaignTokenFundraiser", [address]);
 }
 
-async function createCampaignToken(tokensCount) {
-    return deployContract("CampaignToken", [tokensCount, 10000]);
+async function deployFundsharesToken(tokensCount) {
+    return deployContract("FundSharesToken", [tokensCount, 1000000]);
 }
 
 async function deployContract(contractName, arguments) {

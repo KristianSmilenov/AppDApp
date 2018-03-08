@@ -32,15 +32,15 @@
         },
         campaignDetails: {},
         contracts: {
-          campaignToken: { address: "", abi: [] },
+          fundsharesToken: { address: "", abi: [] },
           campaignInfo: { address: "", abi: [] },
           campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "", campaignHash: "" }
         },
         campaignContributionTx: "",
         campaignBlockchainReceipt: "",
         campaignBlockchainHash: "",
-        purchaseCampaignTokenReceipt: "",
-        campaignTokensBalance: ""
+        purchaseFundsharesReceipt: "",
+        purchasedFundsharesBalance: ""
       },
       methods: {
         getMetaMaskAccount: function () {
@@ -287,35 +287,35 @@
             })
             .on('error', console.error);
         },
-        deployCampaignToken: function (){ 
+        deployFundsharesToken: function (){ 
           var self = this;
-          this.$http.post(this.api.base + this.api.contracts + '/campaign-token', {amount: 10000001}).then(response => {
+          this.$http.post(this.api.base + this.api.contracts + '/fundshares-token', {amount: 10000001}).then(response => {
             var response = response.body;
-            self.contracts.campaignToken.address = response.address;
-            self.contracts.campaignToken.abi = response.abi;
+            self.contracts.fundsharesToken.address = response.address;
+            self.contracts.fundsharesToken.abi = response.abi;
           }, response => {
             alert("Error getting token fundraiser contract info.");
           });
         }, 
-        purchaseCampaignTokens: function () {
+        purchaseFundshares: function () {
           var self = this;
-          var campaignTokenContract = new web3.eth.Contract(self.contracts.campaignToken.abi, self.contracts.campaignToken.address);
-          self.contracts.campaignToken.instance = campaignTokenContract;
+          var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
+          self.contracts.fundsharesToken.instance = fundsharesTokenContract;
 
-          campaignTokenContract.methods.buyTokens().send({ from: self.userAddress, value: 1 * self.config.ethToWei, gas: self.config.gas, gasPrice: self.config.gasPrice })
+          fundsharesTokenContract.methods.buyTokens().send({ from: self.userAddress, value: 1 * self.config.ethToWei, gas: self.config.gas, gasPrice: self.config.gasPrice })
             .on('confirmation', function (confirmationNumber, receipt) {
-              self.purchaseCampaignTokenReceipt = receipt;
+              self.purchaseFundsharesReceipt = receipt;
             })
             .on('error', console.error);
 
         }, 
-        viewCampaignTokensBalance: function () {
+        viewPurchasedFundshares: function () {
           var self = this;
-          var campaignTokenContract = self.contracts.campaignToken.instance;
+          var fundsharesTokenContract = self.contracts.fundsharesToken.instance;
 
-          campaignTokenContract.methods.balanceOf(self.userAddress).call(
+          fundsharesTokenContract.methods.balanceOf(self.userAddress).call(
             { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-              self.campaignTokensBalance = result;
+              self.purchasedFundsharesBalance = result;
             });
         }
       }

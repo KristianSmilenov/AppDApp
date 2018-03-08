@@ -1,12 +1,12 @@
 pragma solidity ^0.4.18;
 
 import './configs/TokenFundraiserConfig.sol';
-import './CampaignToken.sol';
+import './FundSharesToken.sol';
 
 /**
  * @title CampaignTokenFundraiser
  */
-contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
+contract CampaignTokenFundraiser is FundSharesToken, TokenFundraiserConfig {
     // Indicates whether the fundraiser has ended or not.
     bool public finalized = false;
 
@@ -75,7 +75,7 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
      *
      * @param _beneficiary The address which will receive the funds gathered by the fundraiser.
      */
-    function CampaignTokenFundraiser(address _beneficiary) public CampaignToken(0, CONVERSION_RATE) {
+    function CampaignTokenFundraiser(address _beneficiary) public FundSharesToken(0, CONVERSION_RATE) {
         require(_beneficiary != 0);
 
         beneficiary = _beneficiary;
