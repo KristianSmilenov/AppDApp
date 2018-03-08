@@ -55,7 +55,7 @@ function createCampaign(req, res) {
             //     res.status(400);
             //     res.json({ error: true, message: err });
             // });
-            res.json(getCampaignModel(campaign));
+            res.json(campaign);
         })
         .catch(err => {
             res.status(400);
