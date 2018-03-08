@@ -27,7 +27,7 @@ contract CampaignTokenFundraiser {
     event StateChanged(State state, string msg);
 
     // Account balances
-    Participant[] participants;
+    Participant[] public participants;
 
     //The current contract owner
     address public owner;
@@ -119,7 +119,7 @@ contract CampaignTokenFundraiser {
     }
 
     function sendTokensToBeneficiary() private onlyOwner {
-        beneficiary.transfer(beneficiary, this.balance);
+        address(beneficiary).transfer(this.balance);
         state = State.WaitingForTokens;
         StateChanged(state, "sendTokensToBeneficiary");
     }
