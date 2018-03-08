@@ -1,14 +1,14 @@
 pragma solidity ^0.4.18;
 
-import "./traits/HasOwner.sol";
 import './libraries/SafeMath.sol';
 import "./interfaces/ERC20Basic.sol";
 
-contract FundSharesToken is HasOwner, ERC20Basic {
+contract FundSharesToken is ERC20Basic {
     using SafeMath for uint;
 
     mapping (address => uint) balances;
 
+    address public owner;
     string public name;
     string public symbol;
     uint public totalSupply;
@@ -16,7 +16,13 @@ contract FundSharesToken is HasOwner, ERC20Basic {
     // conversion rate 1ETH <> X Tokens
     uint public conversionRate;
 
-    function FundSharesToken(string _name, string _symbol, uint _totalSupply, uint _rate) public HasOwner(msg.sender) {
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function FundSharesToken(string _name, string _symbol, uint _totalSupply, uint _rate) public {
+        owner = msg.sender;
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply;
@@ -72,6 +78,10 @@ contract FundSharesToken is HasOwner, ERC20Basic {
     function _getTokensAmount(uint _weiAmount) internal view returns (uint) {
         uint ethAmount = _weiAmount / (1 ether);
         return ethAmount.mul(conversionRate);
+    }
+
+    function contractBalance() public view returns (uint) {
+        return this.balance;
     }
 
 }

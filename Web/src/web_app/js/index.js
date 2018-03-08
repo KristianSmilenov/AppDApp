@@ -8,7 +8,7 @@
         crowdfundingContract_endDate: '1522576800',
         crowdfundingContract_conversionRate: 1000,
         crowdfundingContract_description: '',
-        crowdfundingContract_minCap: 2,
+        crowdfundingContract_minCap: 2 * Math.pow(10, 18),
         userEntropy: '',
         numberOfAddresses: 2,
         userAddress: '',
@@ -37,7 +37,7 @@
         },
         campaignDetails: {},
         contracts: {
-          fundsharesToken: { address: "", abi: [] },
+          fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
           campaignInfo: { address: "", abi: [] },
           campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "", campaignHash: "", details: "" }
         },
@@ -123,24 +123,43 @@
           contract[this.functionName].apply(this, args);
         },
         deployCrowdfundingContract: function () {
-          // deploy crowdfunding contract with campaignId and beneficiaryAddress from campaign
           var self = this;
           this.$http.get(this.api.base + this.api.contracts + '/CampaignTokenFundraiser')
             .then(resp => {
               var response = resp.body;
               self.contracts.campaignTokenFundraiserInfo.bytecode = response.bytecode;
               self.contracts.campaignTokenFundraiserInfo.abi = response.abi;
-              self.deployContract(response.bytecode, response.abi)
+              var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_endDate, 
+                self.crowdfundingContract_conversionRate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
+              self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
-                  debugger;
                   self.contracts.campaignTokenFundraiserInfo.address = result.contract._address;
                   self.contracts.campaignTokenFundraiserInfo.abi = result.abi;
                   self.contracts.campaignTokenFundraiserInfo.instance = result.contract;
+                  self.saveContractToDB(result.contract._address, params);
                 }).catch(result => {
                   alert(result.message);
                 });
             }, err => {
-              alert("Error getting token fundraiser contract info.", err);
+              alert("Error getting CampaignTokenFundraiser contract info.", err);
+            });
+        },
+        
+        saveContractToDB: function (address, params) {
+          var body = {
+            fundraiserContractAddress: address,
+            beneficiaryAddress: params[0],
+            endDate: parseInt(params[1]),
+            conversionRate: parseInt(params[2]),
+            description: params[3],
+            minCap: parseInt(params[4])
+          };
+
+          this.$http.post(this.api.base + this.api.campaigns, body)
+            .then(resp => {
+              //TODO: do stuff
+            }, err => {
+              alert("Error saving Campaign info.", err);
             });
         },
 
@@ -171,11 +190,10 @@
             });
         },
 
-        deployContract: function (bytecode, abi) {
+        deployContract: function (bytecode, abi, params) {
           var self = this;
           return new Promise((resolve, reject) => {
             var contract = new web3.eth.Contract(abi);
-            var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_endDate, self.crowdfundingContract_conversionRate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
             contract.deploy({
               data: bytecode,
               arguments: params
@@ -187,72 +205,13 @@
               .on('error', error => reject({ error: true, message: error.message }))
               .then(function (newContractInstance) {
                 console.log('info', newContractInstance.options.address);
-                self.saveContractToDB(resolve, reject, newContractInstance, params);
                 resolve({ contract: newContractInstance, abi: abi });
               });
           }, function (error) {
             reject({ error: true, message: error.message });
           });
         },
-        saveContractToDB: function (resolve, reject, contract, params) {
-          var body = {
-            fundraiserContractAddress: contract._address,
-            beneficiaryAddress: params[0],
-            endDate: parseInt(params[1]),
-            conversionRate: parseInt(params[2]),
-            description: params[3],
-            minCap: parseInt(params[4])
-          };
-
-          this.$http.post(this.api.base + this.api.campaigns, body)
-            .then(resp => {
-              var a = 2;
-              resolve();
-              //TODO: do stuff
-            }, err => {
-              reject(err);
-            });
-        },
-        // setCrowdfundingContractCampaign: function () {
-        //   // set fundraising contract, campaignId
-        //   var self = this;
-        //   var fundraiserContract = self.contracts.campaignTokenFundraiserInfo.instance;
-        //   fundraiserContract.methods.setCampaignId(self.campaignDetails.id).send(
-        //     { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-        //       if (!error) {
-        //         fundraiserContract.methods.getCampaignId().call(
-        //           { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-        //             self.contracts.campaignTokenFundraiserInfo.campaignId = result;
-        //           });
-        //       }
-        //     });
-        // },
-        // publishCampaignOnBlockchain: function () {
-        //   // add crowdfunding address to the campaign, create the hash and publish it on blockchain
-        //   var self = this;
-        //   var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
-        //   self.contracts.campaignInfo.instance = campaignContract;
-
-        //   // function addCampaign(string id, bool isActive, string campaignHash) public {
-        //   campaignContract.methods.addCampaign(self.campaignDetails.id, false, self.campaignDetails.campaignDataHash)
-        //   .send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice })
-        //   .on('confirmation', function (confirmationNumber, receipt) {
-        //     self.campaignBlockchainReceipt = receipt;
-        //   })
-        //   .on('error', console.error);
-
-        // },
-        // getCampaignBlockchainInfo: function () {
-        //   // get campaign hash from blockchain
-        //   var self = this;
-        //   var campaignContract = new web3.eth.Contract(self.contracts.campaignInfo.abi, self.contracts.campaignInfo.address);
-        //   self.contracts.campaignInfo.instance = campaignContract;
-
-        //   campaignContract.methods.getCampaignHash(self.campaignDetails.id).call(
-        //     { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
-        //       self.campaignBlockchainHash = result;
-        //     });
-        // },
+        
         contributeToCampaign: function () {
           // transfer funds to the crowdfunding address
           var self = this;
@@ -271,19 +230,24 @@
         },
         deployFundsharesToken: function () {
           var self = this;
-          var contract = {
-            "name": "Token1",
-            "symbol": "TKN1",
-            "totalSupply": 10000000,
-            "rate": 100
-          };
-          this.$http.post(this.api.base + this.api.contracts + '/fundshares-token', contract).then(response => {
-            var response = response.body;
-            self.contracts.fundsharesToken.address = response.address;
-            self.contracts.fundsharesToken.abi = response.abi;
-          }, response => {
-            alert("Error getting token fundraiser contract info.");
-          });
+          this.$http.get(this.api.base + this.api.contracts + '/FundSharesToken')
+            .then(resp => {
+              var response = resp.body;
+              self.contracts.fundsharesToken.bytecode = response.bytecode;
+              self.contracts.fundsharesToken.abi = response.abi;
+              
+              var params = ["Token1", "TKN1", 10000000, 100];
+              self.deployContract(response.bytecode, response.abi, params)
+                .then((result) => {
+                  self.contracts.fundsharesToken.address = result.contract._address;
+                  self.contracts.fundsharesToken.abi = result.abi;
+                  self.contracts.fundsharesToken.instance = result.contract;
+                }).catch(result => {
+                  alert(result.message);
+                });
+            }, err => {
+              alert("Error getting FundSharesToken contract info.", err);
+            });
         },
         purchaseFundshares: function () {
           var self = this;
