@@ -27,8 +27,9 @@ function getContractDetails(req, res) {
 }
 
 function deployFundsharesToken(req, res) {
-    var amount = req.swagger.params.body.value.amount;
-    utils.deployFundsharesToken(amount).then((result) =>{ 
+    var data = req.swagger.params.body.value;
+    var params = Object.values(data);
+    utils.deployFundsharesToken(params).then((result) =>{ 
         res.json({address: result.contract._address, abi: result.abi});
     }).catch(result => {
         res.status(400);

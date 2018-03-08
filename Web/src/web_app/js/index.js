@@ -289,7 +289,13 @@
         },
         deployFundsharesToken: function (){ 
           var self = this;
-          this.$http.post(this.api.base + this.api.contracts + '/fundshares-token', {amount: 10000001}).then(response => {
+          var contract = {
+            "name": "Token1",
+            "symbol": "TKN1",
+            "totalSupply": 10000000,
+            "rate": 100
+          };
+          this.$http.post(this.api.base + this.api.contracts + '/fundshares-token', contract).then(response => {
             var response = response.body;
             self.contracts.fundsharesToken.address = response.address;
             self.contracts.fundsharesToken.abi = response.abi;

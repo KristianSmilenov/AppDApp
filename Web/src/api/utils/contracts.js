@@ -51,8 +51,8 @@ async function createCampaignTokenFundraiser(address) {
     return deployContract("CampaignTokenFundraiser", [address]);
 }
 
-async function deployFundsharesToken(tokensCount) {
-    return deployContract("FundSharesToken", [tokensCount, 1000000]);
+async function deployFundsharesToken(params) {
+    return deployContract("FundSharesToken", params);
 }
 
 async function deployContract(contractName, arguments) {

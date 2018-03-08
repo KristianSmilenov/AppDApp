@@ -302,11 +302,19 @@ definitions:
 
   DeployFundsharesTokenRequest:
     required:
-      - amount
-    properties: 
-      amount:
+      - name
+      - symbol
+      - totalSupply
+      - rate
+    properties:
+      name:
+        type: string 
+      symbol:
+        type: string
+      totalSupply:
         type: number
-  
+      rate:
+        type: number
   DeployCampaignTokenFundraiserRequest:
     required:
       - address
