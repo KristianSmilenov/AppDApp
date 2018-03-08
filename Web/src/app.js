@@ -5,6 +5,7 @@ const http = require('http');
 const fs = require('fs');
 const express = require('express');
 const SwaggerExpress = require('swagger-express-mw');
+const BasicAuth = require('express-basic-auth');
 
 //front-end server
 http.createServer(function (req, res) {
@@ -32,14 +33,26 @@ http.createServer(function (req, res) {
 
 console.log('You can find the web application at: http://127.0.0.1:8080');
 
-  //api server
+const mywebapp = express();
+mywebapp.use('/js', express.static(`${__dirname}\\web_app\\js`));
+mywebapp.use('/css', express.static(`${__dirname}\\web_app\\css`));
+mywebapp.use('/img', express.static(`${__dirname}\\web_app\\img`));
+mywebapp.use('/', express.static(`${__dirname}\\web_app\\index.html`));
+// mywebapp.use(BasicAuth({
+//     users: { 'admin': '123' },
+//     challenge: true
+// }));
+mywebapp.use('/admin', express.static(`${__dirname}\\web_app\\wallet.html`));
+mywebapp.listen(8081);
+
+//api server
 
 const config = {
     configDir:  `${__dirname}\\api\\swagger\\config`,
     swaggerFile:`${__dirname}\\api\\swagger\\swagger.yaml`,
     appRoot: `${__dirname}`
 };
-  
+
 const app = express();
 
 SwaggerExpress.create(config, function(err, swaggerExpress) {
