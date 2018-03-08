@@ -48,8 +48,7 @@ contract CampaignTokenFundraiser is HasOwner {
      * @dev The constructor.
      * @param _beneficiary The address which will receive the funds gathered by the campaign
      */
-    function CampaignTokenFundraiser(ERC20Basic _beneficiary,  uint _endDate,
-    uint _conversionRate, string _description, uint _minCap) public {
+    function CampaignTokenFundraiser(ERC20Basic _beneficiary,  uint _endDate, uint _conversionRate, string _description, uint _minCap) public {
         require(_beneficiary != address(0));
 
         beneficiary = _beneficiary;

@@ -132,6 +132,7 @@
               self.contracts.campaignTokenFundraiserInfo.abi = response.abi;
               self.deployContract(response.bytecode, response.abi)
                 .then((result) => {
+                  debugger;
                   self.contracts.campaignTokenFundraiserInfo.address = result.contract._address;
                   self.contracts.campaignTokenFundraiserInfo.abi = result.abi;
                   self.contracts.campaignTokenFundraiserInfo.instance = result.contract;
@@ -174,7 +175,7 @@
           var self = this;
           return new Promise((resolve, reject) => {
             var contract = new web3.eth.Contract(abi);
-            var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_conversionRate, self.crowdfundingContract_endDate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
+            var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_endDate, self.crowdfundingContract_conversionRate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
             contract.deploy({
               data: bytecode,
               arguments: params
