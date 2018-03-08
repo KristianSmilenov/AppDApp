@@ -1,11 +1,12 @@
 var Migrations = artifacts.require("./Migrations.sol");
-// var CampaignTokenFundraiser = artifacts.require("./CampaignTokenFundraiser.sol");
-// var CampaignToken = artifacts.require("./CampaignToken.sol");
-var CampaignCrowdfunding = artifacts.require("./CampaignCrowdfunding.sol");
 var FundSharesToken = artifacts.require("./FundSharesToken.sol");
+var CampaignTokenFundraiser = artifacts.require("./CampaignTokenFundraiser.sol");
 
-module.exports = function(deployer) {
+module.exports = function (deployer) {
   deployer.deploy(Migrations);
-  // deployer.deploy(FundSharesToken, 10000);
-  // deployer.deploy(CampaignTokenFundraiser, '0x627306090abaB3A6e1400e9345bC60c78a8BEf57');
+  //The end date of the fundraiser: Sunday, 2018-04-01 10:00:00 UTC
+  deployer.deploy(FundSharesToken, "Shares Token 1", "ShT1", 10000000, 100).then(function () {
+    return deployer.deploy(CampaignTokenFundraiser, FundSharesToken.address, 1522576800, 100, "Private sale, min $250k", 250);
+  });
+
 };
