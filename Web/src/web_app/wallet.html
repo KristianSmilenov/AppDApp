@@ -20,9 +20,17 @@
         <br>            
         <h2>Crowdfunding Campaigns</h2>
         <br>
+        <label>Beneficiary Address: <input type="text" v-model="crowdfundingContract_beneficiaryAddress"></label><br>
+        <label>End Date: <input type="text" v-model="crowdfundingContract_endDate"></label><br>
+        <label>Conversion Rate: <input type="text" v-model="crowdfundingContract_conversionRate"></label><br>
+        <label>Description: <input type="text" v-model="crowdfundingContract_description"></label><br>
+        <label>Min Cap: <input type="text" v-model="crowdfundingContract_minCap"></label><br>
         <button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button>
+        <br>
+        <br>
         <span>Token fundraiser contract: {{contracts.campaignTokenFundraiserInfo.address}}</span><br/>
-        
+        <br>
+        <hr>
         <!-- <button v-on:click="createCampaign">Create campaign</button>
         <span>Campaign details: {{campaignDetails}}</span><br/>
 

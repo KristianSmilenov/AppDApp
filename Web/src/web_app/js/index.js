@@ -4,6 +4,11 @@
     var app = new Vue({
       el: '#app',
       data: {
+        crowdfundingContract_beneficiaryAddress: '',
+        crowdfundingContract_endDate: '',
+        crowdfundingContract_conversionRate: 1,
+        crowdfundingContract_description: '',
+        crowdfundingContract_minCap: 1000,
         userEntropy: '',
         numberOfAddresses: 2,
         userAddress: '',
@@ -196,39 +201,64 @@
         deployCrowdfundingContract: function () {
           // deploy crowdfunding contract with campaignId and beneficiaryAddress from campaign
           var self = this;
-          this.$http.get(this.api.base + this.api.contracts + '/CampaignTokenFundraiser').then(response => {
-            var response = response.body;
+          this.$http.get(this.api.base + this.api.contracts + '/CampaignTokenFundraiser')
+          .then(resp => {
+            var response = resp.body;
             self.contracts.campaignTokenFundraiserInfo.bytecode = response.bytecode;
             self.contracts.campaignTokenFundraiserInfo.abi = response.abi;
-            self.deployContract(response.bytecode, response.abi, [self.userAddress]).then((result) => {
+            self.deployContract(response.bytecode, response.abi)
+            .then((result) => {
               self.contracts.campaignTokenFundraiserInfo.address = result.contract._address;
               self.contracts.campaignTokenFundraiserInfo.abi = result.abi;
               self.contracts.campaignTokenFundraiserInfo.instance = result.contract;
             }).catch(result => {
               alert(result.message);
             });
-          }, response => {
-            alert("Error getting token fundraiser contract info.");
+          }, err => {
+            alert("Error getting token fundraiser contract info.", err);
           });
         },
-        deployContract: function (bytecode, abi, param) {
+
+        deployContract: function (bytecode, abi) {
           var self = this;
           return new Promise((resolve, reject) => {
             var contract = new web3.eth.Contract(abi);
+            var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_conversionRate, self.crowdfundingContract_endDate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
             contract.deploy({
               data: bytecode,
-              arguments: param
-            })
-              .send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, transactionHash) {
-                if (error) { reject({ error: true, message: error.message }); }
+              arguments: params
+            }).send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, transactionHash) {
+                if (error) { 
+                  reject({ error: true, message: error.message }); 
+                }
               })
-              .on('error', function (error) { reject({ error: true, message: error.message }); })
+              .on('error', error => reject({ error: true, message: error.message }))
               .then(function (newContractInstance) {
                 console.log('info', newContractInstance.options.address);
+                self.saveContractToDB(resolve, reject, newContractInstance, params);
                 resolve({ contract: newContractInstance, abi: abi });
               });
           }, function (error) {
             reject({ error: true, message: error.message });
+          });
+        },
+        saveContractToDB: function(resolve, reject, contract, params) {
+          var body = {
+            fundraiserContractAddress: contract._address,
+            beneficiaryAddress : params[0],
+            endDate : parseInt(params[1]),
+            conversionRate : parseInt(params[2]),
+            description: params[3],
+            minCap : parseInt(params[4])
+          };
+
+          this.$http.post(this.api.base + this.api.campaigns, body)
+          .then(resp => {
+            var a = 2;
+            resolve();
+            //TODO: do stuff
+          }, err => {
+            reject(err);
           });
         },
         // setCrowdfundingContractCampaign: function () {

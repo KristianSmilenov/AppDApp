@@ -142,7 +142,7 @@ paths:
           description: Create a new fundraising campaign
           required: true
           schema:
-            $ref: "#/definitions/NewCampaignRequest"
+            $ref: "#/definitions/Campaign"
       responses:
         "200":
           description: Success
@@ -222,83 +222,25 @@ definitions:
 
   Campaign:
     required:
-      - id
-      - name
-      - type
-      - description
-      - startDate
-      - endDate
-      - bonus
-      - tokenName
-      - conversionRate
-      - tokensHardCap
-      - beneficiaryAddress
       - fundraiserContractAddress
-      - campaignDataHash
+      - beneficiaryAddress
+      - endDate
+      - conversionRate
+      - description
+      - minCap
     properties: 
-      id:
-        type: string
-      name:
-        type: string
-      type:
-        type: string
-      description:
-        type: string
-      startDate:
-        type: number
-      endDate:
-        type: number
-      bonus:
-        type: number
-      tokenName:
-        type: string
-      conversionRate:
-        type: number
-      tokensHardCap:
-        type: number
-      beneficiaryAddress:
-        type: string
       fundraiserContractAddress:
         type: string
-      campaignDataHash:
-        type: string
-
-  NewCampaignRequest:
-    required:
-      - name
-      - type
-      - description
-      - startDate
-      - endDate
-      - bonus
-      - tokenName
-      - conversionRate
-      - tokensHardCap
-      - beneficiaryAddress
-      - fundraiserContractAddress
-    properties: 
-      name:
-        type: string
-      type:
-        type: string
-      description:
-        type: string
-      startDate:
-        type: number
-      endDate:
-        type: number
-      bonus:
-        type: number
-      tokenName:
-        type: string
-      conversionRate:
-        type: number
-      tokensHardCap:
-        type: number
       beneficiaryAddress:
         type: string
-      fundraiserContractAddress:
+      endDate:
+        type: number
+      conversionRate:
+        type: number
+      description:
         type: string
+      minCap:
+        type: number
 
   DeployFundsharesTokenRequest:
     required:
@@ -318,8 +260,20 @@ definitions:
   DeployCampaignTokenFundraiserRequest:
     required:
       - address
+      - endDate
+      - conversionRate
+      - minCap
+      - description
     properties: 
       address:
+        type: string
+      endDate:
+        type: number
+      conversionRate:
+        type: number
+      minCap:
+        type: number
+      description:
         type: string
   
   ContractDetailsResponse:
