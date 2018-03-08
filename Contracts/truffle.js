@@ -5,9 +5,10 @@ module.exports = {
   networks: {
     development: {
       host: "localhost",
-      port: 8545, // ganache-cli adres
+      port: 8545, // ganache-cli address
       network_id: "*", // match any network id
-      gasPrice: 40000000000,
+      gasPrice: 50000000000, //(50 Shannon)
+      gas: 4712388,
     },
     coverage: {
       host: "localhost",

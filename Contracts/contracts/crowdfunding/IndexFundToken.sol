@@ -12,9 +12,11 @@ contract IndexFundToken is ERC20Basic, Ownable {
     string public name;
     uint8 public decimals;
     string public symbol;
+    // How many token units a buyer gets per wei
+    uint256 public rate;
     string public version = "0.0.1";
 
-    function IndexFundToken (uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) public {
+    function IndexFundToken (uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol, uint256 _rate) public {
 
         //TODO: Add list of items in the index: btc,eth,etc...
         
@@ -23,6 +25,21 @@ contract IndexFundToken is ERC20Basic, Ownable {
         name = _tokenName;
         decimals = _decimalUnits;
         symbol = _tokenSymbol;
+        rate = _rate;
+    }
+
+    function () external payable {
+        buyTokens(msg.sender);
+    }
+
+    function buyTokens(address _beneficiary) public payable {
+        uint256 weiAmount = msg.value;
+        uint256 _tokenAmount = _getTokenAmount(weiAmount);
+        this.transfer(_beneficiary, _tokenAmount);
+    }
+
+    function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
+        return _weiAmount.mul(rate);
     }
 
     function totalSupply() public view returns (uint256) {
