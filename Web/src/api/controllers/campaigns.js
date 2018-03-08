@@ -43,18 +43,19 @@ function getCampaign(req, res) {
 
 function createCampaign(req, res) {
     var campaign = req.swagger.params.body.value;
-    setCampaignDataHash(campaign);
+    // setCampaignDataHash(campaign);
     storage.saveCampaign(campaign)
         .then((campaign) => {
-            var campaignData = getCampaignModel(campaign);
-            // update hash with campaignId
-            setCampaignDataHash(campaignData);
-            storage.updateCampaign(campaignData.id, campaignData).then((campaign) => {
-                res.json(getCampaignModel(campaign));
-            }).catch(err => {
-                res.status(400);
-                res.json({ error: true, message: err });
-            });
+            // var campaignData = getCampaignModel(campaign);
+            // // update hash with campaignId
+            // setCampaignDataHash(campaignData);
+            // storage.updateCampaign(campaignData.id, campaignData).then((campaign) => {
+            //     res.json(getCampaignModel(campaign));
+            // }).catch(err => {
+            //     res.status(400);
+            //     res.json({ error: true, message: err });
+            // });
+            res.json(getCampaignModel(campaign));
         })
         .catch(err => {
             res.status(400);
@@ -62,13 +63,13 @@ function createCampaign(req, res) {
         });
 }
 
-function setCampaignDataHash(campaign) {
-    delete campaign.campaignDataHash;
-    const hash = crypto.createHmac('sha256', secret)
-        .update(JSON.stringify(campaign))
-        .digest('hex');
-    campaign.campaignDataHash = hash;
-}
+// function setCampaignDataHash(campaign) {
+//     delete campaign.campaignDataHash;
+//     const hash = crypto.createHmac('sha256', secret)
+//         .update(JSON.stringify(campaign))
+//         .digest('hex');
+//     campaign.campaignDataHash = hash;
+// }
 
 function getCampaignsResponse(campaigns) {
     var result = [];
