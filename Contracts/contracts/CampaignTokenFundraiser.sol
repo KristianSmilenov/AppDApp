@@ -24,6 +24,8 @@ contract CampaignTokenFundraiser {
         _;
     }
 
+    event StateChanged(State state, string msg);
+
     // Account balances
     Participant[] participants;
 
@@ -49,9 +51,6 @@ contract CampaignTokenFundraiser {
     uint public minCap;
 
     // Amount of wei collected during the campaign
-    uint public weiCollected;
-
-    // Amount of wei collected during the campaign
     string public description;
 
     /**
@@ -64,10 +63,10 @@ contract CampaignTokenFundraiser {
         beneficiary = _beneficiary;
         conversionRate = _conversionRate;
         endDate = _endDate;
-        weiCollected = 0;
         description = _description;
         minCap = _minCap;
         state = State.CollectingFunds;
+        StateChanged(state, "CampaignTokenFundraiser");
         owner = msg.sender;
     }
 
@@ -87,16 +86,16 @@ contract CampaignTokenFundraiser {
         require(tx.gasprice <= MAX_GAS_PRICE);  // gas price limit
 
         participants.push(Participant(msg.sender, msg.value));
-
-        weiCollected = weiCollected.plus(msg.value);
     }
 
     function invalidate() public onlyOwner {
         require(state == State.CollectingFunds);
 
         state = State.Refunding;
+        StateChanged(state, "invalidate");
         refund();        
         state = State.Canceled;
+        StateChanged(state, "invalidate");
     }
 
     function sendTokens() public {
@@ -108,6 +107,7 @@ contract CampaignTokenFundraiser {
         }
         
         state = State.Completed;
+        StateChanged(state, "sendTokens");
     }
 
     function refund() public {
@@ -121,6 +121,7 @@ contract CampaignTokenFundraiser {
     function sendTokensToBeneficiary() private onlyOwner {
         beneficiary.transfer(beneficiary, this.balance);
         state = State.WaitingForTokens;
+        StateChanged(state, "sendTokensToBeneficiary");
     }
 
     function getCampaignBalance() view public returns (uint) {
@@ -137,7 +138,7 @@ contract CampaignTokenFundraiser {
     function close() public onlyOwner {
         require(state == State.CollectingFunds);
 
-        if (weiCollected >= minCap && now <= endDate) {
+        if (this.balance >= minCap && now <= endDate) {
             sendTokensToBeneficiary();
         } else {
             invalidate();
