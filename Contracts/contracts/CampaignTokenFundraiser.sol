@@ -46,7 +46,6 @@ contract CampaignTokenFundraiser is HasOwner {
 
     /**
      * @dev The constructor.
-     *
      * @param _beneficiary The address which will receive the funds gathered by the campaign
      */
     function CampaignTokenFundraiser(ERC20Basic _beneficiary,  uint _endDate,
@@ -112,6 +111,14 @@ contract CampaignTokenFundraiser is HasOwner {
     function sendTokensToBeneficiary() private onlyOwner {
         beneficiary.transfer(beneficiary, this.balance);
         state = State.WaitingForTokens;
+    }
+
+    function getCampaignBalance() view public returns (uint) {
+        return this.balance;
+    }
+    
+    function getParticipantsNumber() view public returns (uint) {
+        return participants.length;
     }
 
     /**

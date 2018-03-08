@@ -48,6 +48,11 @@
         <br>
         <br>
         <span>Token fundraiser contract: {{contracts.campaignTokenFundraiserInfo.address}}</span><br/>
+
+        <button v-on:click="readCrowdfundingContractData()">Get collected funds</button>
+        <button v-on:click="readCrowdfundingParticipantsData()">Get participants number</button>
+        <button v-on:click="finalizeCrowdfundingContract()">Finalize campaign</button>
+        <span>Details: {{contracts.campaignTokenFundraiserInfo.details}}</span><br/>
         <br>
         <!-- <button v-on:click="createCampaign">Create campaign</button>
         <span>Campaign details: {{campaignDetails}}</span><br/>
@@ -70,15 +75,33 @@
         <hr>
         <br/>
         <br/>
-        <h2>Index fund token</h2>
+        <h2>Fundshares token</h2>
         <button v-on:click="deployFundsharesToken()">Deploy fundshares token</button>
         <span>Token address: {{contracts.fundsharesToken.address}}</span><br/>
 
-        <button v-on:click="purchaseFundshares()">Purchase fundshares tokens</button>
+        <button v-on:click="purchaseFundshares()">Fundshares buyTokens()</button>
         <span>Details: {{purchaseFundsharesReceipt}}</span><br/>
 
+        <span>Check balance of address:</span>
+        <input type="text" v-model="purchasedFundsharesAddress" />
         <button v-on:click="viewPurchasedFundshares()">View balance</button>
         <span>Balance: {{purchasedFundsharesBalance}}</span><br/>
+
+        <div>
+            <label>Send Ether to Fundshares</label>
+            <div>From: {{userAddress}}</br>
+            </div>
+            <div>To:
+                <input type="text" v-model="sendToAddress" size="40"> </input>
+            </div>
+            <div>Ether:
+                <input type="text" v-model="sendValueAmount">
+            </div>
+            <div>
+                <button v-on:click="sendEthToFundshares()">Send Ether</button>
+            </div>
+        </div>
+
         <!-- <br/>
         <br/>
         <br/>
