@@ -52,7 +52,7 @@ async function createCampaignTokenFundraiser(address) {
 }
 
 async function createCampaignToken(tokensCount) {
-    return deployContract("CampaignToken", [tokensCount]);
+    return deployContract("CampaignToken", [tokensCount, 10000]);
 }
 
 async function deployContract(contractName, arguments) {

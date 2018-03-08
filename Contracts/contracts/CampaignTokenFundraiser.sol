@@ -75,7 +75,7 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
      *
      * @param _beneficiary The address which will receive the funds gathered by the fundraiser.
      */
-    function CampaignTokenFundraiser(address _beneficiary) public CampaignToken(0) {
+    function CampaignTokenFundraiser(address _beneficiary) public CampaignToken(0, CONVERSION_RATE) {
         require(_beneficiary != 0);
 
         beneficiary = _beneficiary;
@@ -86,9 +86,6 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
         tokensSold = 0;
         minimumContribution = MIN_CONTRIBUTION;
         individualLimit = INDIVIDUAL_ETHER_LIMIT * CONVERSION_RATE;
-
-        // Freeze the transfers for the duration of the fundraiser.
-        freeze();
     }
 
     /**
@@ -139,7 +136,7 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
     /**
      * @dev The default function which will fire every time someone sends ethers to this contract's address.
      */
-    function() public payable {
+    function() external payable {
         buyTokens();
     }
 
@@ -187,8 +184,5 @@ contract CampaignTokenFundraiser is CampaignToken, TokenFundraiserConfig {
 
         /// Finalize the fundraiser. Keep in mind that this cannot be undone.
         finalized = true;
-
-        // Unfreeze transfers
-        unfreeze();
     }
 }

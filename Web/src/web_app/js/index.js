@@ -32,12 +32,15 @@
         },
         campaignDetails: {},
         contracts: {
+          campaignToken: { address: "", abi: [] },
           campaignInfo: { address: "", abi: [] },
           campaignTokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "", campaignHash: "" }
         },
         campaignContributionTx: "",
         campaignBlockchainReceipt: "",
-        campaignBlockchainHash: ""
+        campaignBlockchainHash: "",
+        purchaseCampaignTokenReceipt: "",
+        campaignTokensBalance: ""
       },
       methods: {
         getMetaMaskAccount: function () {
@@ -283,6 +286,37 @@
               console.log(receipt);
             })
             .on('error', console.error);
+        },
+        deployCampaignToken: function (){ 
+          var self = this;
+          this.$http.post(this.api.base + this.api.contracts + '/campaign-token', {amount: 10000001}).then(response => {
+            var response = response.body;
+            self.contracts.campaignToken.address = response.address;
+            self.contracts.campaignToken.abi = response.abi;
+          }, response => {
+            alert("Error getting token fundraiser contract info.");
+          });
+        }, 
+        purchaseCampaignTokens: function () {
+          var self = this;
+          var campaignTokenContract = new web3.eth.Contract(self.contracts.campaignToken.abi, self.contracts.campaignToken.address);
+          self.contracts.campaignToken.instance = campaignTokenContract;
+
+          campaignTokenContract.methods.buyTokens().send({ from: self.userAddress, value: 1 * self.config.ethToWei, gas: self.config.gas, gasPrice: self.config.gasPrice })
+            .on('confirmation', function (confirmationNumber, receipt) {
+              self.purchaseCampaignTokenReceipt = receipt;
+            })
+            .on('error', console.error);
+
+        }, 
+        viewCampaignTokensBalance: function () {
+          var self = this;
+          var campaignTokenContract = self.contracts.campaignToken.instance;
+
+          campaignTokenContract.methods.balanceOf(self.userAddress).call(
+            { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+              self.campaignTokensBalance = result;
+            });
         }
       }
     });

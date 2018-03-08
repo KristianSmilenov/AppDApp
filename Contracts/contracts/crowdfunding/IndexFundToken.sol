@@ -2,9 +2,8 @@ pragma solidity ^0.4.18;
 
 import "./ERC20Basic.sol";
 import "./SafeMath.sol";
-import "./Ownable.sol";
 
-contract IndexFundToken is ERC20Basic, Ownable {
+contract IndexFundToken is ERC20Basic {
     using SafeMath for uint256;
 
     mapping(address => uint256) balances;
@@ -16,16 +15,17 @@ contract IndexFundToken is ERC20Basic, Ownable {
     uint256 public rate;
     string public version = "0.0.1";
 
-    function IndexFundToken (uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol, uint256 _rate) public {
+    function IndexFundToken (uint256 _initialAmount) public {
 
         //TODO: Add list of items in the index: btc,eth,etc...
-        
+        // , string _tokenName, uint8 _decimalUnits, string _tokenSymbol, uint256 _rate
+
         balances[msg.sender] = _initialAmount;
         totalSupply_ = _initialAmount;
-        name = _tokenName;
-        decimals = _decimalUnits;
-        symbol = _tokenSymbol;
-        rate = _rate;
+        name = "Index Fund Token";
+        decimals = 18;
+        symbol = "IFT";
+        rate = 1;
     }
 
     function () external payable {
@@ -35,6 +35,7 @@ contract IndexFundToken is ERC20Basic, Ownable {
     function buyTokens(address _beneficiary) public payable {
         uint256 weiAmount = msg.value;
         uint256 _tokenAmount = _getTokenAmount(weiAmount);
+        balances[_beneficiary] = balances[_beneficiary].add(_tokenAmount);
         this.transfer(_beneficiary, _tokenAmount);
     }
 

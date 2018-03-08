@@ -40,8 +40,19 @@
 
         <br/>
         <br/>
+        <h2>Index fund token</h2>
         <br/>
-        <br/>
+        <button v-on:click="getMetaMaskAccount()">Load MetaMask account</button>
+        <span>Wallet address: {{userAddress}} </span><br/>
+        
+        <button v-on:click="deployCampaignToken()">Deploy campaign token</button>
+        <span>Token address: {{contracts.campaignToken.address}}</span><br/>
+
+        <button v-on:click="purchaseCampaignTokens()">Purchase campaign tokens</button>
+        <span>Details: {{purchaseCampaignTokenReceipt}}</span><br/>
+
+        <button v-on:click="viewCampaignTokensBalance()">View balance</button>
+        <span>Balance: {{campaignTokensBalance}}</span><br/>
         <br/>
         <br/>
         <br/>
