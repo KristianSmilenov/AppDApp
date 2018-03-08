@@ -12,7 +12,7 @@ contract FundSharesToken is TokenConfig, HasOwner, ERC20TokenInterface {
     string public name;
     string public symbol;
     uint8 public decimals;
-    uint256 public rate;
+    uint256 public _conversionRate;
 
     function FundSharesToken(uint _totalSupply, uint256 _rate) public HasOwner(msg.sender) {
         name = NAME;
@@ -20,7 +20,7 @@ contract FundSharesToken is TokenConfig, HasOwner, ERC20TokenInterface {
         decimals = DECIMALS;
         totalSupply = _totalSupply;
         balances[owner] = _totalSupply;
-        rate = _rate;
+        _conversionRate = _rate;
     }
 
     function balanceOf(address _account) public constant returns (uint balance) {
@@ -46,13 +46,12 @@ contract FundSharesToken is TokenConfig, HasOwner, ERC20TokenInterface {
     }
 
     function buyTokens() public payable {
-        //TODO: fix wei conversion rate
-        //uint256 weiAmount = msg.value;
-        //uint256 _tokenAmount = _getTokenAmount(weiAmount);
-        this.transferPurchasedTokens(msg.sender, 13);
+        uint256 weiAmount = msg.value;
+        uint256 _tokenAmount = _getTokenAmount(weiAmount);
+        _transferPurchasedTokens(msg.sender, _tokenAmount);
     }
 
-    function transferPurchasedTokens(address _to, uint _value) public returns (bool success) {
+    function _transferPurchasedTokens(address _to, uint _value) internal returns (bool success) {
         if (balances[owner] < _value || _value == 0) {
             return false;
         }
@@ -65,8 +64,20 @@ contract FundSharesToken is TokenConfig, HasOwner, ERC20TokenInterface {
         return true;
     } 
 
-    function _getTokenAmount(uint256 _weiAmount) public view returns (uint256) {
-        return _weiAmount.mul(rate);
+    /**
+     * @dev Gets the number of tokens to be distributed according to _conversionRate
+     */
+    function _getTokenAmount(uint256 _weiAmount) internal view returns (uint256) {
+        uint256 ethAmount = _weiAmount / (1 ether);
+        return ethAmount.mul(_conversionRate);
+    }
+
+    /**
+     * @dev Sets conversion rate of 1 ETH to TOKEN
+     */
+    function setConversionRate(uint _rate) public onlyOwner {
+        require(_conversionRate > 0);
+        _conversionRate = _rate;
     }
 
 }
