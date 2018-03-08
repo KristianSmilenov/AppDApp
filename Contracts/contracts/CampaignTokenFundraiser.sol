@@ -35,7 +35,7 @@ contract CampaignTokenFundraiser is HasOwner {
     //the date on which the campaign is closed
     uint public endDate;
 
-    // Minimum amounts of wei to be collected, before the campaign can be finalized
+    // Minimum amounts of ETH to be collected, before the campaign can be finalized
     uint public minCap;
 
     // Amount of wei collected during the campaign
@@ -72,7 +72,7 @@ contract CampaignTokenFundraiser is HasOwner {
      */
     function buyTokens() public payable {
         require(state == State.CollectingFunds);
-        require(now <= endDate);
+        //TODO: fix dates require(now <= endDate);
         require(tx.gasprice <= MAX_GAS_PRICE);  // gas price limit
 
         participants.push(Participant(msg.sender, msg.value));
@@ -124,10 +124,11 @@ contract CampaignTokenFundraiser is HasOwner {
      * @dev Close the campaign if `endDate` has passed and if funds have been collected
      */
     function close() public onlyOwner {
+        uint ethCollected = weiCollected / (1 ether);
         require(state == State.CollectingFunds);
-        require(now >= endDate);
+        require(now >= endDate || ethCollected >= minCap);
 
-        if (weiCollected >= minCap) {
+        if (ethCollected >= minCap) {
             sendTokensToBeneficiary();
         } else {
             invalidate();

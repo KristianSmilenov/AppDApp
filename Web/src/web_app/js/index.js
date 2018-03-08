@@ -6,9 +6,9 @@
       data: {
         crowdfundingContract_beneficiaryAddress: '',
         crowdfundingContract_endDate: '1522576800',
-        crowdfundingContract_conversionRate: 1,
+        crowdfundingContract_conversionRate: 1000,
         crowdfundingContract_description: '',
-        crowdfundingContract_minCap: 1000,
+        crowdfundingContract_minCap: 2,
         userEntropy: '',
         numberOfAddresses: 2,
         userAddress: '',
