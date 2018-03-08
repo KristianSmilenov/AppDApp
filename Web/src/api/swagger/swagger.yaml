@@ -262,8 +262,8 @@ definitions:
       - address
       - endDate
       - conversionRate
-      - minCap
       - description
+      - minCap
     properties: 
       address:
         type: string
@@ -271,10 +271,10 @@ definitions:
         type: number
       conversionRate:
         type: number
-      minCap:
-        type: number
       description:
         type: string
+      minCap:
+        type: number
   
   ContractDetailsResponse:
     required:

@@ -49,8 +49,8 @@ async function getBalance() {
 
 //ERC20TokenInterface _beneficiary,  uint _endDate,
 //uint _conversionRate, string _description, uint _minCap
-async function createCampaignTokenFundraiser(address, endDate, conversionRate, minCap, description) {
-    return deployContract("CampaignTokenFundraiser", [address, endDate, conversionRate, minCap, description]);
+async function createCampaignTokenFundraiser(params) {
+    return deployContract("CampaignTokenFundraiser", params);
 }
 
 async function deployFundsharesToken(params) {
