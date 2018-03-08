@@ -20,17 +20,35 @@
         <br>            
         <h2>Crowdfunding Campaigns</h2>
         <br>
-        <label>Beneficiary Address: <input type="text" v-model="crowdfundingContract_beneficiaryAddress"></label><br>
-        <label>End Date: <input type="text" v-model="crowdfundingContract_endDate"></label><br>
-        <label>Conversion Rate: <input type="text" v-model="crowdfundingContract_conversionRate"></label><br>
-        <label>Description: <input type="text" v-model="crowdfundingContract_description"></label><br>
-        <label>Min Cap: <input type="text" v-model="crowdfundingContract_minCap"></label><br>
-        <button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button>
+        <table>
+            <tr>
+                <td>Beneficiary Address:</td>
+                <td><input type="text" v-model="crowdfundingContract_beneficiaryAddress"></td>
+            </tr>
+            <tr>
+                <td>End Date:</td>
+                <td><input type="text" v-model="crowdfundingContract_endDate"></td>
+            </tr>
+            <tr>
+                <td>Conversion Rate:</td>
+                <td><input type="text" v-model="crowdfundingContract_conversionRate"></td>
+            </tr>
+            <tr>
+                <td>Min Cap:</td>
+                <td><input type="text" v-model="crowdfundingContract_minCap"></td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td><textarea v-model="crowdfundingContract_description"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button></td>
+            </tr>
+        </table>
         <br>
         <br>
         <span>Token fundraiser contract: {{contracts.campaignTokenFundraiserInfo.address}}</span><br/>
         <br>
-        <hr>
         <!-- <button v-on:click="createCampaign">Create campaign</button>
         <span>Campaign details: {{campaignDetails}}</span><br/>
 
@@ -49,6 +67,7 @@
         <button v-on:click="contributeToCampaign()">Contribute to campaign</button>
         <span>Contribution tx: {{campaignContributionTx}}</span>
 
+        <hr>
         <br/>
         <br/>
         <h2>Index fund token</h2>

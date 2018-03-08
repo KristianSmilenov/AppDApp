@@ -1,3 +1,14 @@
 .text-white h3 a {
     color:white;
 }
+
+#app {
+    margin: 50px;
+}
+
+td textarea {
+    width: 100%;
+}
+td button {
+    width: 100%;
+}
