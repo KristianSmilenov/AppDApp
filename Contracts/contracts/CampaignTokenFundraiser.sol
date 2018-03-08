@@ -4,26 +4,27 @@ import './libraries/SafeMath.sol';
 import './interfaces/ERC20TokenInterface.sol';
 import './traits/HasOwner.sol';
 
-//  TODO: add refundVault
-//  TODO: add finalize logic
-//  TODO: pass all data via constructor
+//  TODO: Move money logic to a Vault contract
 
 contract CampaignTokenFundraiser is HasOwner {
    
     using SafeMath for uint;
 
+    enum State { CollectingFunds, WaitingForTokens, Refunding, Completed, Canceled }
+
     struct Participant {
         address addr;
         uint weiDonated;
     }
+
     // Account balances
     Participant[] participants;
 
+    //The current state of the campaign
+    State public state;
+
     // Maximum gas price limit
     uint constant MAX_GAS_PRICE = 50000000000 wei; // 50 gwei/shanon
-
-    // Indicates whether the campaign has ended or not
-    bool public finalized = false;
 
     // The address of the account which will receive the funds gathered by the campaign
     ERC20TokenInterface public beneficiary;
@@ -48,13 +49,17 @@ contract CampaignTokenFundraiser is HasOwner {
      *
      * @param _beneficiary The address which will receive the funds gathered by the campaign
      */
-    function CampaignTokenFundraiser(ERC20TokenInterface _beneficiary,  uint _endDate, uint _conversionRate) public {
+    function CampaignTokenFundraiser(ERC20TokenInterface _beneficiary,  uint _endDate,
+    uint _conversionRate, string _description, uint _minCap) public {
         require(_beneficiary != address(0));
 
         beneficiary = _beneficiary;
         conversionRate = _conversionRate;
         endDate = _endDate;
         weiCollected = 0;
+        description = _description;
+        minCap = _minCap;
+        state = State.CollectingFunds;
     }
 
     /**
@@ -68,7 +73,7 @@ contract CampaignTokenFundraiser is HasOwner {
      * @dev Allows users to participate in the pre-sale crowdfunding
      */
     function buyTokens() public payable {
-        require(!finalized);
+        require(state == State.CollectingFunds);
         require(now <= endDate);
         require(tx.gasprice <= MAX_GAS_PRICE);  // gas price limit
 
@@ -78,35 +83,48 @@ contract CampaignTokenFundraiser is HasOwner {
     }
 
     function invalidate() public onlyOwner {
-        //TODO: implement
-        finalized = true;
+        require(state == State.CollectingFunds);
+
+        state = State.Refunding;
+        refund();        
+        state = State.Canceled;
     }
 
     function sendTokens() public {
+        require(state == State.WaitingForTokens);
+
         for (uint i = 0; i <= participants.length; i++) {
             uint tokens = participants[i].weiDonated.mul(conversionRate);
             beneficiary.transfer(participants[i].addr, tokens);
         }
+        
+        state = State.Completed;
     }
 
     function refund() public {
-        require(finalized);
+        require(state == State.Refunding);
+
         for (uint i = 0; i <= participants.length; i++) {
-            participants[i].addr.send(participants[i].weiDonated);
+            participants[i].addr.transfer(participants[i].weiDonated);
         }
     }
 
-    /**
-     * @dev Finalize the campaign if `endDate` has passed and if funds have been collected
-     */
-    function finalize() public onlyOwner {
-        require(weiCollected >= minCap && now >= endDate);
-        require(!finalized);
-
-        /// Send the total number of ETH gathered to the beneficiary.
+    function sendTokensToBeneficiary() private onlyOwner {
         beneficiary.transfer(beneficiary, this.balance);
+        state = State.WaitingForTokens;
+    }
 
-        /// Finalize the campaign. Cannot be undone!
-        finalized = true;
+    /**
+     * @dev Close the campaign if `endDate` has passed and if funds have been collected
+     */
+    function close() public onlyOwner {
+        require(state == State.CollectingFunds);
+        require(now >= endDate);
+
+        if (weiCollected >= minCap) {
+            sendTokensToBeneficiary();
+        } else {
+            invalidate();
+        }
     }
 }
