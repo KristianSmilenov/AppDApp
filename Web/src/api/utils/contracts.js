@@ -11,8 +11,8 @@ var account = conf.defaultAccount || web3.eth.coinbase;
 
 module.exports = {
     createContract: createContract,
-    getCampaignHash: getCampaignHash,
-    createCampaigns: createCampaigns,
+    // getCampaignHash: getCampaignHash,
+    // createCampaigns: createCampaigns,
     deployFundsharesToken: deployFundsharesToken,
     getContractDetails: getContractDetails,
     createCampaignTokenFundraiser: createCampaignTokenFundraiser
@@ -43,12 +43,14 @@ async function getBalance() {
     await web3.eth.getBalance(account);
 }
 
-async function createCampaigns() {
-    return deployContract("Campaigns", []);
-}
+// async function createCampaigns() {
+//     return deployContract("Campaigns", []);
+// }
 
-async function createCampaignTokenFundraiser(address) {
-    return deployContract("CampaignTokenFundraiser", [address]);
+//ERC20TokenInterface _beneficiary,  uint _endDate,
+//uint _conversionRate, string _description, uint _minCap
+async function createCampaignTokenFundraiser(address, endDate, conversionRate, minCap, description) {
+    return deployContract("CampaignTokenFundraiser", [address, endDate, conversionRate, minCap, description]);
 }
 
 async function deployFundsharesToken(params) {
@@ -99,12 +101,12 @@ function createContract(contractName, address) {
     });
 }
 
-function getCampaignHash(contract, campaignId) {
-    return new Promise((resolve, reject) => {
-        contract.methods.getCampaignHash(campaignId)
-            .call({ from: account },
-                function (error, result) {
-                    resolve({ error: error, hash: result });
-                });
-    });
-}
+// function getCampaignHash(contract, campaignId) {
+//     return new Promise((resolve, reject) => {
+//         contract.methods.getCampaignHash(campaignId)
+//             .call({ from: account },
+//                 function (error, result) {
+//                     resolve({ error: error, hash: result });
+//                 });
+//     });
+// }
