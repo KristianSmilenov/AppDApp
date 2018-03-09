@@ -47,21 +47,35 @@
             });
       },
 
+      refreshGrid: function() {
+        var b = this.savedCampaigns;
+        this.savedCampaigns = [];
+        this.savedCampaigns = b;
+      },
+
       getCampaignState: async function(campaignAddress) {
-        var self = this;
-        var userAddress = await getMetaMaskAccount();
-        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
-        fundraiserContract.methods.invalidate().call(
-            { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
-                alert(error, result); //TODO: fix
-            });
+        var state = await getCampaignState(campaignAddress);
+        this.savedCampaigns
+          .find(c => c.fundraiserContractAddress == campaignAddress)
+          .state = state;
+
+          this.refreshGrid();
       },
 
       deployContract: deployContract,
       deployCrowdfundingContract: deployCrowdfundingContract,
       deployFundsharesToken: deployFundsharesToken,
 
-      getCampaignContractData: getCampaignContractData,
+      getCampaignBalance: async function(campaignAddress) {
+        var bal = await getCampaignBalance(campaignAddress);
+
+        this.savedCampaigns
+          .find(c => c.fundraiserContractAddress == campaignAddress)
+          .balance = bal;
+
+          this.refreshGrid();
+      },
+
       getCampaignParticipantsData: getCampaignParticipantsData,        
       finalizeCampaign: finalizeCampaign,
       contributeToCampaign: async function(address) {

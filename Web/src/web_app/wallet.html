@@ -32,12 +32,14 @@
                 <td>{{ new Date(campaign.endDate * 1000).toLocaleDateString() + " " + new Date(campaign.endDate * 1000).toLocaleTimeString() }}</td>
                 <td>{{campaign.conversionRate / 1.0e18 }} ETH for a token</td>
                 <td>{{campaign.minCap / 1.0e18 }} ETH</td>
-                <td>TODO...</td>
-                <td>TODO...</td>
+                <td>{{campaign.state}}</td>
+                <td>{{campaign.balance}}</td>
                 <td>{{campaign.description.substring(0, 100) + '...'}}</td>
                 <td>
-                    <button  class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button>
+                    <button class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button>
                     <button class="btn btn-info" v-on:click="contributeToCampaign(campaign.fundraiserContractAddress)">Contribute</button>
+                    <button class="btn btn-success"v-on:click="getCampaignBalance(campaign.fundraiserContractAddress)">Progress</button>
+                    <button class="btn btn-warning"v-on:click="getCampaignState(campaign.fundraiserContractAddress)">State</button>
                 </td>
             </tr>
         </table>
@@ -71,7 +73,6 @@
         <br>
         <span>Token fundraiser contract: {{contracts.tokenFundraiserInfo.address}}</span><br/>
 
-        <button v-on:click="getCampaignContractData()">Get collected funds</button>
         <button v-on:click="getCampaignParticipantsData()">Get participants number</button>
         <button v-on:click="finalizeCampaign()">Finalize campaign</button>
         <span>Details: {{contracts.tokenFundraiserInfo.details}}</span><br/>

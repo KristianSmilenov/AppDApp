@@ -79,13 +79,35 @@ function getContractsFromDB() {
 }
 
 
-async function getCampaignContractData() {
-    var self = this;
-    var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
-    fundraiserContract.methods.getCampaignBalance().call(
-        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-            self.contracts.tokenFundraiserInfo.details = result + " balance";
+async function getCampaignBalance(campaignAddress) {
+    return new Promise(async (resolve, reject) => {
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+        fundraiserContract.methods.getCampaignBalance().call(
+            { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
+                if(error)
+                    reject(err);
+                else
+                    resolve(result);
+            });
+    });
+}
+
+function getState(enumVal) {
+    return ["Collecting Funds", "Waiting for Tokens", "Refunding", "Completed", "Canceled"][enumVal];
+}
+
+async function getCampaignState(campaignAddress) {
+    return new Promise(async (resolve, reject) => {
+    var userAddress = await getMetaMaskAccount();
+    var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+    fundraiserContract.methods.getState().call(
+        { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+            if(error)
+                    reject(err);
+                else
+                    resolve(getState(result));
         });
+    });
 }
 
 async function getCampaignParticipantsData() {
