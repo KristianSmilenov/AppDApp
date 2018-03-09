@@ -46,7 +46,7 @@ contract FundSharesToken is ERC20Basic {
         balances[msg.sender] -= _value;
         balances[_to] = balances[_to].plus(_value);
 
-        emit Transfer(msg.sender, _to, _value);
+        Transfer(msg.sender, _to, _value);
         return true;
     }
 
@@ -72,7 +72,7 @@ contract FundSharesToken is ERC20Basic {
         balances[_to] = balances[_to].plus(_value);
         balances[owner] = balances[owner].minus(_value);
 
-        emit Transfer(owner, _to, _value);
+        Transfer(owner, _to, _value);
     } 
 
     function _getTokensAmount(uint _weiAmount) internal view returns (uint) {
