@@ -243,9 +243,11 @@
                         </td>
                       </tr>
                   </table>
-                  <h4 style="padding: 50px;">{{ campaignDetailData.description.substring(0, 500) }}</h4>
-                  <input type=number v-model="participationAmount">
-                <button style="margin-left: 50px;" type="button" class="btn btn-success btn-lg" v-on:click="participateInCampaign()">&nbsp;&nbsp;&nbsp;Participate&nbsp;&nbsp;&nbsp;</button>
+                  <h6 style="padding-left: 50px; padding-top: 20px;">{{ campaignDetailData.description.substring(0, 500) }}</h4>
+                  <div style="padding-left: 50px; padding-top: 20px;">
+                    <input type=number v-model="participationAmount">
+                    <button style="margin-left: 50px;" type="button" class="btn btn-success btn-lg" v-on:click="participateInCampaign()">&nbsp;&nbsp;&nbsp;Participate&nbsp;&nbsp;&nbsp;</button>
+                  </div>
                 </div>
             </div>
             <div class="modal-footer">

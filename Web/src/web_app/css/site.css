@@ -32,11 +32,11 @@ td button {
   }
   .modal-lg {
     max-width: 800px;
-    height: 1200px;
+    height: 1000px;
   }
   
   .modal-lg .modal-content {
-    height: 1000px;
+    height: 800px;
   }
 
   @media (min-width: 768px) {
