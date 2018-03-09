@@ -62,10 +62,6 @@
           this.refreshGrid();
       },
 
-      deployContract: deployContract,
-      deployCrowdfundingContract: deployCrowdfundingContract,
-      deployFundsharesToken: deployFundsharesToken,
-
       getCampaignBalance: async function(campaignAddress) {
         var bal = await getCampaignBalance(campaignAddress);
 
@@ -76,11 +72,16 @@
           this.refreshGrid();
       },
 
-      getCampaignParticipantsData: getCampaignParticipantsData,        
-      finalizeCampaign: finalizeCampaign,
       contributeToCampaign: async function(address) {
         await contributeToCampaign(address, await getMetaMaskAccount(), 0.01);
       },
+
+      getCampaignParticipantsData: getCampaignParticipantsData,        
+      finalizeCampaign: finalizeCampaign,
+      
+      deployContract: deployContract,
+      deployCrowdfundingContract: deployCrowdfundingContract,
+      deployFundsharesToken: deployFundsharesToken,
 
       viewPurchasedFundshares: viewPurchasedFundshares,
       purchaseFundshares: purchaseFundshares,

@@ -22,9 +22,19 @@
           .catch(err => console.log(err));
         },
 
-        openModal: function(campaignId) {
+        openModal: async function(campaignId) {
             this.campaignDetailData = this.savedCampaigns.find(c => c._id == campaignId);
-            this.campaignDetailData.progress = '0.5';
+            var campaignAddress = this.campaignDetailData.fundraiserContractAddress;
+
+            var bal = await getCampaignBalance(campaignAddress);
+            var prog = Number(bal) / this.campaignDetailData.minCap * 100;
+
+            prog = parseInt(Math.min(100, prog));
+
+            this.campaignDetailData.progress = prog;
+            this.campaignDetailData.state = await getCampaignState(campaignAddress);;
+
+            this.refreshModal();
 
             $('#myModal').modal();
         },
@@ -37,7 +47,20 @@
             contributeToCampaign(this.campaignDetailData.fundraiserContractAddress, userAddress, Number(this.participationAmount))
             .then()
             .catch(alert)
+        },
+
+        refreshModal: function() {
+          var b = this.campaignDetailData;
+          this.campaignDetailData = {};
+          this.campaignDetailData = b;
+        },
+        
+        refreshGrid: function() {
+          var b = this.savedCampaigns;
+          this.savedCampaigns = [];
+          this.savedCampaigns = b;
         }
+
       },
       created: function () {
         this.fetchContractsFromDB();
