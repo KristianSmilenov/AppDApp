@@ -251,5 +251,24 @@ async function includeHTML() {
             return;
           }
         }
+        resolve();
     });
   }
+
+function showError(title, message) {
+    var html = '<div class="alert alert-danger" role="alert" id="bootstrap-error"><strong>' + title + ' </strong> ' + message + '</div>';
+    $('#alert-placeholder').html(html);
+
+    $("#bootstrap-error").fadeTo(2000, 500).slideUp(500, function () {
+        $("#bootstrap-error").slideUp(500, () => $('#alert-placeholder').html(''));
+    });
+}
+
+function showSuccess(title, message) {
+    var html = '<div class="alert alert-success" role="alert" id="bootstrap-error"><strong>' + title + ' </strong> ' + message + '</div>';
+    $('#alert-placeholder').html(html);
+
+    $("#bootstrap-error").fadeTo(2000, 500).slideUp(500, function () {
+        $("#bootstrap-error").slideUp(500, () => $('#alert-placeholder').html(''));
+    });
+}

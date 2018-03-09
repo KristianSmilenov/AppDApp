@@ -83,3 +83,9 @@ td button {
   #wallet-app {
     padding: 50px;
   }
+
+  .alert {
+    position: fixed;
+    top: 55px;
+    width: 100%;
+  }
