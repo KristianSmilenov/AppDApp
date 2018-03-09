@@ -50,10 +50,10 @@ function deployCrowdfundingContract() {
                 .then((result) => {
                     self.saveContractToDB(result.contract._address, params);
                 }).catch(result => {
-                    alert(result.message);
+                    showError(result.message);
                 });
         }, err => {
-            alert("Error getting CampaignTokenFundraiser contract info.", err);
+            showError("Error getting CampaignTokenFundraiser contract info.", err);
         });
 }
 
@@ -71,7 +71,7 @@ function saveContractToDB(address, params) {
         .then(resp => {
             //TODO: do stuff
         }, err => {
-            alert("Error saving Campaign info.", err);
+            showError("Error saving Campaign info.", err);
         });
 }
 
@@ -181,10 +181,10 @@ function deployFundsharesToken() {
                     self.contracts.fundsharesToken.abi = result.abi;
                     self.contracts.fundsharesToken.instance = result.contract;
                 }).catch(result => {
-                    alert(result.message);
+                    showError(result.message);
                 });
         }, err => {
-            alert("Error getting FundSharesToken contract info.", err);
+            showError("Error getting FundSharesToken contract info.", err);
         });
 }
 
@@ -207,9 +207,9 @@ async function sendEthToFundshares() {
         gasPrice: gasPrice, gas: gas
     }, function (err, txhash) {
         if (err && err.message) {
-            alert('error: ' + err.message);
+            showError('error: ' + err.message);
         } else {
-            alert('Successfully sent transcation. Txhash: ' + txhash);
+            showSuccess('Successfully sent transcation. Txhash: ' + txhash);
         }
     })
 }

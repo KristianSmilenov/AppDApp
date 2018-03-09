@@ -43,9 +43,8 @@
 
         fundraiserContract.methods.invalidate().send(
             { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
-              alert(error, result); //TODO: fix
-              // if(error) showSuccess(error);
-              // else showError(result);
+              if(error) showError(error);
+              else showSuccess(result);
             });
       },
 
@@ -55,9 +54,8 @@
 
         fundraiserContract.methods.close().send(
             { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
-                alert(error, result); //TODO: fix
-                // if(error) showSuccess(error);
-                // else showError(result);
+              if(error) showError(error);
+              else showSuccess(result);
             });
       },
 
@@ -67,9 +65,8 @@
 
         fundraiserContract.methods.sendTokens().send(
             { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
-                alert(error, result); //TODO: fix
-                // if(error) showSuccess(error);
-                // else showError(result);
+              if(error) showError(error);
+              else showSuccess(result);
             });
       },
 
