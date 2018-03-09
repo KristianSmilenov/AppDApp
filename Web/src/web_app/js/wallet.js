@@ -41,7 +41,7 @@
         var userAddress = await getMetaMaskAccount();
         var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
 
-        fundraiserContract.methods.invalidate().call(
+        fundraiserContract.methods.invalidate().send(
             { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
               alert(error, result); //TODO: fix
               // if(error) showSuccess(error);
@@ -49,11 +49,11 @@
             });
       },
 
-      finalizeCampaign: async function(campaignAddress) {
+      closeCampaign: async function(campaignAddress) {
         var userAddress = await getMetaMaskAccount();
         var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
 
-        fundraiserContract.methods.close().call(
+        fundraiserContract.methods.close().send(
             { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
                 alert(error, result); //TODO: fix
                 // if(error) showSuccess(error);
