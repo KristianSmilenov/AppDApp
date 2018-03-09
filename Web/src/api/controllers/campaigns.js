@@ -32,6 +32,7 @@ function getCampaign(req, res) {
 
 function createCampaign(req, res) {
     var campaign = req.swagger.params.body.value;
+    campaign.imgSrc = 'img/campaigns/' + parseInt(Math.random() * 7 % 7) + '.jpg';
     storage.saveCampaign(campaign)
         .then((campaign) => {
             res.json(campaign);
