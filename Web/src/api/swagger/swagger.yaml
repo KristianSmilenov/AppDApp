@@ -149,6 +149,21 @@ definitions:
         type: number
       imgSrc:
         type: string
+      campaignToken:
+        $ref: "#/definitions/CampaignToken"
+
+  CampaignToken:
+    required:
+      - name
+      - symbol
+      - totalSupply
+    properties: 
+      name:
+        type: string
+      symbol:
+        type: string
+      totalSupply:
+        type: number
 
   ContractDetailsResponse:
     required:
