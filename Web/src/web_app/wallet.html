@@ -39,10 +39,7 @@
                 <td>{{campaign.description.substring(0, 100) + '...'}}</td>
                 <td>
                     <button class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button>
-                    <button class="btn btn-info" v-on:click="contributeToCampaign(campaign.fundraiserContractAddress)">Contribute</button>
-                    <button class="btn btn-success"v-on:click="getCampaignBalance(campaign.fundraiserContractAddress)">Progress</button>
-                    <button class="btn btn-warning"v-on:click="getCampaignState(campaign.fundraiserContractAddress)">State</button>
-                    <button class="btn" v-on:click="getCampaignParticipantsCount(campaign.fundraiserContractAddress)">Participant #</button>
+                    <button class="btn btn-info" v-on:click="refreshCampaignData(campaign.fundraiserContractAddress)">Refresh</button>
                 </td>
             </tr>
         </table>

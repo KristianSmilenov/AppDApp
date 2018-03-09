@@ -53,6 +53,12 @@
         this.savedCampaigns = b;
       },
 
+      refreshCampaignData: async function (campaignAddress) {
+        await this.getCampaignState(campaignAddress);
+        await this.getCampaignBalance(campaignAddress);
+        await this.getCampaignParticipantsCount(campaignAddress);
+      },
+
       getCampaignState: async function(campaignAddress) {
         var state = await getCampaignState(campaignAddress);
         this.savedCampaigns
