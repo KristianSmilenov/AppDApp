@@ -41,7 +41,7 @@ contract CampaignTokenFundraiser {
     // The address of the account which will receive the funds gathered by the campaign
     ERC20Basic public beneficiary;
 
-    // The number of tokens participants will receive per 1 wei
+    // The number of wei participants pay per token
     uint public conversionRate;
 
     //the date on which the campaign is closed
@@ -101,9 +101,9 @@ contract CampaignTokenFundraiser {
     function sendTokens() public {
         require(state == State.WaitingForTokens);
 
-        for (uint i = 0; i <= participants.length; i++) {
-            uint tokens = participants[i].weiDonated.mul(conversionRate);
-            beneficiary.transfer(participants[i].addr, tokens);
+        for (uint i = 0; i < participants.length; i++) {
+            uint tokens = participants[i].weiDonated.div(conversionRate);
+            require(beneficiary.transfer(participants[i].addr, tokens));
         }
         
         state = State.Completed;
@@ -113,13 +113,13 @@ contract CampaignTokenFundraiser {
     function refund() public {
         require(state == State.Refunding);
 
-        for (uint i = 0; i <= participants.length; i++) {
+        for (uint i = 0; i < participants.length; i++) {
             participants[i].addr.transfer(participants[i].weiDonated);
         }
     }
 
     function sendTokensToBeneficiary() private onlyOwner {
-        address(beneficiary).transfer(this.balance);
+        address(beneficiary).call.value(this.balance)();
         state = State.WaitingForTokens;
         StateChanged(state, "sendTokensToBeneficiary");
     }

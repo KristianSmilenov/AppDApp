@@ -13,7 +13,7 @@ contract FundSharesToken is ERC20Basic {
     string public symbol;
     uint public totalSupply;
     uint8 public decimals = 18;
-    // conversion rate 1ETH <> X Tokens
+    // conversion rate 1 token <> X wei
     uint public conversionRate;
 
     modifier onlyOwner {
@@ -45,7 +45,6 @@ contract FundSharesToken is ERC20Basic {
 
         balances[msg.sender] -= _value;
         balances[_to] = balances[_to].plus(_value);
-
         Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -71,17 +70,15 @@ contract FundSharesToken is ERC20Basic {
 
         balances[_to] = balances[_to].plus(_value);
         balances[owner] = balances[owner].minus(_value);
-
         Transfer(owner, _to, _value);
     } 
 
     function _getTokensAmount(uint _weiAmount) internal view returns (uint) {
-        uint ethAmount = _weiAmount / (1 ether);
-        return ethAmount.mul(conversionRate);
+        return _weiAmount.div(conversionRate);
     }
 
     function contractBalance() public view returns (uint) {
         return this.balance;
     }
-
 }
+
