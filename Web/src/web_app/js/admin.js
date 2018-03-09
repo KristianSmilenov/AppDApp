@@ -1,7 +1,8 @@
-(function () {
+(async function () {
 
   forceMetamask();
   initWeb3();
+  await includeHTML();
 
   var app = new Vue({
     el: '#wallet-app',
