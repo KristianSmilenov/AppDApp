@@ -40,24 +40,6 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
 
-  /contracts/campaign:
-    x-swagger-router-controller: contracts
-    get:
-      description: Deploy campaign contract
-      operationId: deployCampaigns
-      tags: 
-        - Contracts
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/ContractDeployedResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-
   /campaigns:
     x-swagger-router-controller: campaigns
     get:
@@ -166,40 +148,6 @@ definitions:
       minCap:
         type: number
 
-  DeployFundsharesTokenRequest:
-    required:
-      - name
-      - symbol
-      - totalSupply
-      - rate
-    properties:
-      name:
-        type: string 
-      symbol:
-        type: string
-      totalSupply:
-        type: number
-      rate:
-        type: number
-  DeployCampaignTokenFundraiserRequest:
-    required:
-      - address
-      - endDate
-      - conversionRate
-      - description
-      - minCap
-    properties: 
-      address:
-        type: string
-      endDate:
-        type: number
-      conversionRate:
-        type: number
-      description:
-        type: string
-      minCap:
-        type: number
-  
   ContractDetailsResponse:
     required:
       - bytecode
@@ -212,18 +160,6 @@ definitions:
         items: 
           $ref: "#/definitions/ABI"
 
-  ContractDeployedResponse:
-    required:
-      - address
-      - abi
-    properties: 
-      address:
-        type: string
-      abi:
-        type: array
-        items: 
-          $ref: "#/definitions/ABI"
-  
   ABIInput:
     properties: 
       name:
