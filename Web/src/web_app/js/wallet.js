@@ -21,11 +21,6 @@
         ethToWei: 1.0e18,
         ethHost: "http://localhost:8545"
       },
-      api: {
-        base: "http://localhost:10010",
-        campaigns: "/campaigns",
-        contracts: "/contracts"
-      },
       savedContracts: 'asd',
       contracts: {
         fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
@@ -52,8 +47,7 @@
       purchaseFundshares: purchaseFundshares,
       sendEthToFundshares: sendEthToFundshares,
 
-      saveContractToDB: saveContractToDB,
-      getContractsFromDB: getContractsFromDB,
+      saveContractToDB: saveContractToDB
     }
   });
 })();

@@ -1,3 +1,9 @@
+const apiConfig = {
+    base: "http://localhost:10010",
+    campaigns: "/campaigns",
+    contracts: "/contracts"
+};
+
 function initWeb3() {
   if (typeof web3 !== 'undefined') {
     console.log('Web3 injected browser: OK.')
@@ -29,7 +35,7 @@ function getMetaMaskAccount() {
 }
 function deployCrowdfundingContract() {
     var self = this;
-    this.$http.get(this.api.base + this.api.contracts + '/CampaignTokenFundraiser')
+    this.$http.get(apiConfig.base + apiConfig.contracts + '/CampaignTokenFundraiser')
         .then(resp => {
             var response = resp.body;
             self.contracts.tokenFundraiserInfo.bytecode = response.bytecode;
@@ -61,7 +67,7 @@ function saveContractToDB(address, params) {
         minCap: parseInt(params[4])
     };
 
-    this.$http.post(this.api.base + this.api.campaigns, body)
+    this.$http.post(apiConfig.base + apiConfig.campaigns, body)
         .then(resp => {
             //TODO: do stuff
         }, err => {
@@ -71,13 +77,7 @@ function saveContractToDB(address, params) {
 
 
 function getContractsFromDB() {
-    var self = this;
-    this.$http.get(this.api.base + this.api.campaigns)
-        .then(resp => {
-            self.savedContracts = JSON.stringify(resp.body);
-        }, err => {
-            alert("Error saving Campaign info.", err);
-        });
+    return $.get(apiConfig.base + apiConfig.campaigns);
 }
 
 
@@ -149,7 +149,7 @@ function contributeToCampaign() {
 
 function deployFundsharesToken() {
     var self = this;
-    this.$http.get(this.api.base + this.api.contracts + '/FundSharesToken')
+    this.$http.get(apiConfig.base + apiConfig.contracts + '/FundSharesToken')
         .then(resp => {
             var response = resp.body;
             self.contracts.fundsharesToken.bytecode = response.bytecode;
