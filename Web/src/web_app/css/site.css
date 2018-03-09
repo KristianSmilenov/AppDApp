@@ -12,3 +12,13 @@ td textarea {
 td button {
     width: 100%;
 }
+
+.img-fixed{
+    width: 100%;
+    height: 320px;
+    border: 4px solid black;
+}
+
+.portfolio-box {
+    background-color: black;
+}
