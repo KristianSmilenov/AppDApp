@@ -1,49 +1,29 @@
 'use strict';
 
-var url = require('url');
-const http = require('http');
-const fs = require('fs');
 const express = require('express');
 const SwaggerExpress = require('swagger-express-mw');
 const BasicAuth = require('express-basic-auth');
 
 //front-end server
-http.createServer(function (req, res) {
-  const prefix = "./Web/src/web_app";
-  var q = url.parse(req.url, true);
-  var filename = prefix + q.pathname;
-  if(q.pathname == "/")
-    filename += "index.html";
-
-  fs.readFile(filename, function(err, data) {
-    if (err) {
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      return res.end("404 Not Found");
-    }  
-    var mimetypes = {html: 'text/html', css: 'text/css', js: 'text/javascript'};
-    var spl = filename.split('.');
-    var ext = spl[spl.length - 1];
-    var mime = mimetypes[ext];
-    if(!mime) mime = mimetypes.html;
-    res.writeHead(200, {'Content-Type': mime});
-    res.write(data);
-    return res.end();
-  });
-}).listen(8080);
-
-console.log('You can find the web application at: http://127.0.0.1:8080');
 
 const mywebapp = express();
-mywebapp.use('/js', express.static(`${__dirname}\\web_app\\js`));
-mywebapp.use('/css', express.static(`${__dirname}\\web_app\\css`));
-mywebapp.use('/img', express.static(`${__dirname}\\web_app\\img`));
-mywebapp.use('/', express.static(`${__dirname}\\web_app\\index.html`));
-// mywebapp.use(BasicAuth({
-//     users: { 'admin': '123' },
-//     challenge: true
-// }));
-mywebapp.use('/admin', express.static(`${__dirname}\\web_app\\wallet.html`));
-mywebapp.listen(8081);
+mywebapp.use(express.static(`${__dirname}\\web_app\\js`));
+mywebapp.use(express.static(`${__dirname}\\web_app\\css`));
+mywebapp.use(express.static(`${__dirname}\\web_app\\img`));
+mywebapp.use(express.static(`${__dirname}\\web_app\\`));
+
+//admin area - password protected
+mywebapp.use(BasicAuth({
+    users: { 'admin': '123' },
+    challenge: true
+}));
+mywebapp.use('/admin/html', express.static(`${__dirname}\\web_app\\admin`));
+mywebapp.use('/admin/js', express.static(`${__dirname}\\web_app\\js`));
+mywebapp.use('/admin/css', express.static(`${__dirname}\\web_app\\css`));
+mywebapp.use('/admin/img', express.static(`${__dirname}\\web_app\\img`));
+mywebapp.listen(8080);
+
+console.log('You can find the web application at: http://127.0.0.1:8080');
 
 //api server
 
