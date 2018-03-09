@@ -36,15 +36,10 @@ function deployCrowdfundingContract() {
     this.$http.get(apiConfig.base + apiConfig.contracts + '/CampaignTokenFundraiser')
         .then(resp => {
             var response = resp.body;
-            self.contracts.tokenFundraiserInfo.bytecode = response.bytecode;
-            self.contracts.tokenFundraiserInfo.abi = response.abi;
             var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_endDate,
             self.crowdfundingContract_conversionRate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
             self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
-                    self.contracts.tokenFundraiserInfo.address = result.contract._address;
-                    self.contracts.tokenFundraiserInfo.abi = result.abi;
-                    self.contracts.tokenFundraiserInfo.instance = result.contract;
                     self.saveContractToDB(result.contract._address, params);
                 }).catch(result => {
                     alert(result.message);
@@ -55,7 +50,6 @@ function deployCrowdfundingContract() {
 }
 
 function saveContractToDB(address, params) {
-    var self = this;
     var body = {
         fundraiserContractAddress: address,
         beneficiaryAddress: params[0],
@@ -117,7 +111,6 @@ async function getCampaignParticipantsCount(campaignAddress) {
 }
 
 async function deployContract(bytecode, abi, params) {
-    var self = this;
     return new Promise(async (resolve, reject) => {
         var contract = new web3.eth.Contract(abi);
         contract.deploy({

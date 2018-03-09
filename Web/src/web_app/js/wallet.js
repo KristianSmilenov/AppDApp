@@ -20,9 +20,7 @@
       savedCampaigns: [],
       contracts: {
         fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
-        tokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "", campaignHash: "", details: "" }
       },
-      campaignContributionTx: "",
       purchaseFundsharesReceipt: "",
       purchasedFundsharesBalance: "",
       purchasedFundsharesAddress: ""
