@@ -35,7 +35,10 @@
                 <td>TODO...</td>
                 <td>TODO...</td>
                 <td>{{campaign.description.substring(0, 100) + '...'}}</td>
-                <td><button  class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button></td>
+                <td>
+                    <button  class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button>
+                    <button class="btn btn-info" v-on:click="contributeToCampaign(campaign.fundraiserContractAddress)">Contribute</button>
+                </td>
             </tr>
         </table>
         <br>
@@ -72,7 +75,6 @@
         <button v-on:click="getCampaignParticipantsData()">Get participants number</button>
         <button v-on:click="finalizeCampaign()">Finalize campaign</button>
         <span>Details: {{contracts.tokenFundraiserInfo.details}}</span><br/>
-        <button v-on:click="contributeToCampaign()">Contribute to campaign</button><br/>
         <span>Contribution tx: {{campaignContributionTx}}</span>
 
         <hr>

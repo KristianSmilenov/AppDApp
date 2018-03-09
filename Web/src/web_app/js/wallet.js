@@ -64,23 +64,8 @@
       getCampaignContractData: getCampaignContractData,
       getCampaignParticipantsData: getCampaignParticipantsData,        
       finalizeCampaign: finalizeCampaign,
-      contributeToCampaign: async function() {
-        //TODO: remove the whole method
-        contributeToCampaign
-        // transfer funds to the crowdfunding address
-        var self = this;
-        var fundraiser = self.contracts.tokenFundraiserInfo.instance;
-        fundraiser.methods.buyTokens().send({ from: await getMetaMaskAccount(), value: ethToWei / 1.0e15, gas: gas, gasPrice: gasPrice })
-            .on('transactionHash', function (hash) {
-                self.campaignContributionTx = hash;
-            })
-            .on('confirmation', function (confirmationNumber, receipt) {
-                self.campaignContributionTx = receipt;
-            })
-            .on('receipt', function (receipt) {
-                console.log(receipt);
-            })
-            .on('error', console.error);
+      contributeToCampaign: async function(address) {
+        await contributeToCampaign(address, await getMetaMaskAccount(), 0.01);
       },
 
       viewPurchasedFundshares: viewPurchasedFundshares,
