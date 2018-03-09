@@ -110,7 +110,7 @@ contract CampaignTokenFundraiser {
         StateChanged(state, "sendTokens");
     }
 
-    function refund() public {
+    function refund() private {
         require(state == State.Refunding);
 
         for (uint i = 0; i < participants.length; i++) {
