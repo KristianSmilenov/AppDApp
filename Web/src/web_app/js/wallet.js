@@ -61,6 +61,18 @@
             });
       },
 
+      finalizeCampaign: async function(campaignAddress) {
+        var userAddress = await getMetaMaskAccount();
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+
+        fundraiserContract.methods.sendTokens().send(
+            { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+                alert(error, result); //TODO: fix
+                // if(error) showSuccess(error);
+                // else showError(result);
+            });
+      },
+
       refreshGrid: function() {
         var b = this.savedCampaigns;
         this.savedCampaigns = [];
