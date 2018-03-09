@@ -13,7 +13,7 @@ module.exports = {
 
 function getCampaigns(req, res) {
     storage.getCampaigns().then((campaigns) => {
-        res.json(getCampaignsResponse(campaigns));
+        res.json(campaigns);
     }).catch(err => {
         res.status(400);
         res.json({ error: true, message: err });
@@ -40,30 +40,4 @@ function createCampaign(req, res) {
             res.status(400);
             res.json({ error: true, message: err.message });
         });
-}
-
-function getCampaignsResponse(campaigns) {
-    var result = [];
-    for (var i = 0, len = campaigns.length; i < len; i++) {
-        result.push(getCampaignModel(campaigns[i]));
-    }
-    return result;
-}
-
-function getCampaignModel(currentCampaign) {
-    return {
-        "id": currentCampaign._id.toString(),
-        "name": currentCampaign.name,
-        "type": currentCampaign.type,
-        "description": currentCampaign.description,
-        "startDate": currentCampaign.startDate,
-        "endDate": currentCampaign.endDate,
-        "bonus": currentCampaign.bonus,
-        "tokenName": currentCampaign.tokenName,
-        "conversionRate": currentCampaign.conversionRate,
-        "tokensHardCap": currentCampaign.tokensHardCap,
-        "beneficiaryAddress": currentCampaign.beneficiaryAddress,
-        "fundraiserContractAddress": currentCampaign.fundraiserContractAddress,
-        "campaignDataHash": currentCampaign.campaignDataHash
-    };
 }
