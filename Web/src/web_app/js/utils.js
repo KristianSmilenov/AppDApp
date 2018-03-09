@@ -8,6 +8,14 @@ const ethToWei = 1.0e18;
 const gasPrice = 5000000000;
 const gas = 4312388;
 
+function forceMetamask() {
+    var hasMetamask = (typeof web3 !== 'undefined' && window.web3.givenProvider && window.web3.givenProvider.isMetaMask);
+    if(hasMetamask) return;
+
+    var html = '<div class="alert alert-danger" role="alert"><strong>No Metamask detected!</strong> This page requires Metamask to function properly. Please install it and refresh.</div>';
+    $('body').html(html);
+}
+
 function initWeb3() {
   if (typeof web3 !== 'undefined') {
     console.log('Web3 injected browser: OK.')

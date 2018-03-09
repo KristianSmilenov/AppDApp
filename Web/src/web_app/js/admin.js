@@ -1,5 +1,6 @@
 (function () {
 
+  forceMetamask();
   initWeb3();
 
   var app = new Vue({

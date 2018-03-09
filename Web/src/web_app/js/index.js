@@ -1,5 +1,6 @@
 (function () {
 
+    forceMetamask();
     initWeb3();
 
     $('#myModal').modal('hide');
