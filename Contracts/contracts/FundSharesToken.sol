@@ -12,6 +12,7 @@ contract FundSharesToken is ERC20Basic {
     string public name;
     string public symbol;
     uint public totalSupply;
+    uint public minParticipation;
     uint8 public decimals = 18;
     // conversion rate 1 token <> X wei
     uint public conversionRate;
@@ -21,20 +22,21 @@ contract FundSharesToken is ERC20Basic {
         _;
     }
 
-    function FundSharesToken(string _name, string _symbol, uint _totalSupply, uint _rate) public {
+    function FundSharesToken(string _name, string _symbol, uint _totalSupply, uint _rate, uint _minParticipation) public {
         owner = msg.sender;
         name = _name;
         symbol = _symbol;
         totalSupply = _totalSupply;
         balances[owner] = _totalSupply;
         conversionRate = _rate;
+        minParticipation = _minParticipation;
     }
 
     function totalSupply() public view returns (uint) {
         return totalSupply;
     }
 
-    function balanceOf(address _account) public constant returns (uint balance) {
+    function balanceOf(address _account) public view returns (uint balance) {
         return balances[_account];
     }
 
@@ -60,7 +62,10 @@ contract FundSharesToken is ERC20Basic {
 
     function buyTokens() public payable {
         uint weiAmount = msg.value;
+        require(weiAmount >= minParticipation);
+        
         uint _tokenAmount = _getTokensAmount(weiAmount);
+
         _transferPurchasedTokens(msg.sender, _tokenAmount);
     }
 
