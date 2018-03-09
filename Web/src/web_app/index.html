@@ -228,8 +228,8 @@
                         <td>{{ new Date(campaignDetailData.endDate * 1000).toLocaleDateString() + " " + new Date(campaignDetailData.endDate * 1000).toLocaleTimeString() }}</td>
                       </tr>
                       <tr>
-                        <td></td>
-                        <td></td>
+                        <td>Progress:</td>
+                        <td>{{ campaignDetailData.progress }}</td>
                       </tr>
                   </table>
                   <h4 style="padding: 50px;">{{ campaignDetailData.description.substring(0, 500) }}</h4>

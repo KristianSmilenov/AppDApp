@@ -27,6 +27,7 @@
                 <th>Weis for a Token:</th>
                 <th>Min Cap:</th>
                 <th>State: </th>
+                <th>Collected: </th>
                 <th>Description:</th>
                 <th>Actions:</th>
             </tr>
@@ -36,6 +37,7 @@
                 <td>{{ new Date(campaign.endDate * 1000).toLocaleDateString() + " " + new Date(campaign.endDate * 1000).toLocaleTimeString() }}</td>
                 <td>{{campaign.conversionRate / 1.0e18 }} ETH for a token</td>
                 <td>{{campaign.minCap / 1.0e18 }} ETH</td>
+                <td>TODO...</td>
                 <td>TODO...</td>
                 <td>{{campaign.description.substring(0, 100) + '...'}}</td>
                 <td><button  class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button></td>

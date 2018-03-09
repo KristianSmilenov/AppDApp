@@ -24,6 +24,8 @@
 
         openModal: function(campaignId) {
             this.campaignDetailData = this.savedCampaigns.find(c => c._id == campaignId);
+            this.campaignDetailData.progress = '0.5';
+
             $('#myModal').modal();
         },
 
