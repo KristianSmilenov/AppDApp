@@ -70,3 +70,16 @@ td button {
   .wider-columns td {
       padding-left: 50px;
   }
+
+  .popup-gallery {
+    background-color: black;
+  }
+
+  table.grid td{
+    padding: 10px;
+    border: 1px solid grey;
+  }
+
+  #wallet-app {
+    padding: 50px;
+  }

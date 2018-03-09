@@ -142,7 +142,7 @@
       <div class="container-fluid p-0">
         <div class="row no-gutters popup-gallery">
 
-          <div class="col-lg-4 col-sm-6"  v-for="campaign in savedCampaigns">
+          <div class="col-lg-4 col-sm-6" v-for="campaign in savedCampaigns">
             <a class="portfolio-box" v-on:click="openModal(campaign._id)">
               <img class="img-fixed" v-bind:src="campaign.imgSrc" alt="">
               <div class="portfolio-box-caption">

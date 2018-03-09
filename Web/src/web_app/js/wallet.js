@@ -3,7 +3,11 @@
   initWeb3();
 
   var app = new Vue({
-    el: '#app',
+    el: '#wallet-app',
+    created: function () {
+      this.fetchContractsFromDB();
+    },
+
     data: {
       crowdfundingContract_beneficiaryAddress: '',
       crowdfundingContract_endDate: '1522576800',
@@ -13,7 +17,7 @@
       userAddress: '',
       sendToAddress: '',
       sendValueAmount: '',
-      savedContracts: 'asd',
+      savedCampaigns: [],
       contracts: {
         fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
         tokenFundraiserInfo: { bytecode: "", abi: [], address: "", instance: null, campaignId: "", campaignHash: "", details: "" }
@@ -24,8 +28,37 @@
       purchasedFundsharesAddress: ""
     },
     methods: {
+      fetchContractsFromDB: function () {
+        var self = this;
+        getContractsFromDB()
+        .then((campaigns) => {
+            self.savedCampaigns = campaigns;
+        })
+        .catch(err => console.log(err));
+      },
+
       getMetaMaskAccount: async function() {
         this.userAddress = await getMetaMaskAccount();
+      },
+
+      invalidateCampaign: async function(campaignAddress) {
+        var self = this;
+        var userAddress = await getMetaMaskAccount();
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+        fundraiserContract.methods.invalidate().call(
+            { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+                alert(error, result); //TODO: fix
+            });
+      },
+
+      getCampaignState: async function(campaignAddress) {
+        var self = this;
+        var userAddress = await getMetaMaskAccount();
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+        fundraiserContract.methods.invalidate().call(
+            { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+                alert(error, result); //TODO: fix
+            });
       },
 
       deployContract: deployContract,

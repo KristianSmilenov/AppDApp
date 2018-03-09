@@ -12,13 +12,35 @@
 </head>
 
 <body>
-    <div id="app">
+    <div id="wallet-app">
 
         <button v-on:click="getMetaMaskAccount()">Load MetaMask account</button>
         <span>Wallet address: {{userAddress}} </span><br/>
 
         <br>            
         <h2>Crowdfunding Campaigns</h2>
+        <table class='grid'>
+            <tr>
+                <th>Contract Addr:</th>
+                <th>Beneficiary Addr:</th>
+                <th>End Date:</th>
+                <th>Weis for a Token:</th>
+                <th>Min Cap:</th>
+                <th>State: </th>
+                <th>Description:</th>
+                <th>Actions:</th>
+            </tr>
+            <tr v-for="campaign in savedCampaigns">
+                <td>{{campaign.fundraiserContractAddress}}</td>
+                <td>{{campaign.beneficiaryAddress}}</td>
+                <td>{{ new Date(campaign.endDate * 1000).toLocaleDateString() + " " + new Date(campaign.endDate * 1000).toLocaleTimeString() }}</td>
+                <td>{{campaign.conversionRate / 1.0e18 }} ETH for a token</td>
+                <td>{{campaign.minCap / 1.0e18 }} ETH</td>
+                <td>TODO...</td>
+                <td>{{campaign.description.substring(0, 100) + '...'}}</td>
+                <td><button  class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button></td>
+            </tr>
+        </table>
         <br>
         <table>
             <tr>
