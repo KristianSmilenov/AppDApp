@@ -38,12 +38,26 @@
       },
 
       invalidateCampaign: async function(campaignAddress) {
-        var self = this;
         var userAddress = await getMetaMaskAccount();
         var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+
         fundraiserContract.methods.invalidate().call(
             { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+              alert(error, result); //TODO: fix
+              // if(error) showSuccess(error);
+              // else showError(result);
+            });
+      },
+
+      finalizeCampaign: async function(campaignAddress) {
+        var userAddress = await getMetaMaskAccount();
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+
+        fundraiserContract.methods.close().call(
+            { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
                 alert(error, result); //TODO: fix
+                // if(error) showSuccess(error);
+                // else showError(result);
             });
       },
 
@@ -90,7 +104,6 @@
 
           this.refreshGrid();
       },
-      finalizeCampaign: finalizeCampaign,
       
       deployContract: deployContract,
       deployCrowdfundingContract: deployCrowdfundingContract,

@@ -116,15 +116,6 @@ async function getCampaignParticipantsCount(campaignAddress) {
     });
 }
 
-async function finalizeCampaign() {
-    var self = this;
-    var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
-    fundraiserContract.methods.close().send(
-        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-            self.contracts.tokenFundraiserInfo.details = result;
-        });
-}
-
 async function deployContract(bytecode, abi, params) {
     var self = this;
     return new Promise(async (resolve, reject) => {
