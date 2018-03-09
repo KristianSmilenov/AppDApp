@@ -66,7 +66,7 @@ contract CampaignTokenFundraiser {
         description = _description;
         minCap = _minCap;
         state = State.CollectingFunds;
-        StateChanged(state, "CampaignTokenFundraiser");
+        emit StateChanged(state, "CampaignTokenFundraiser");
         owner = msg.sender;
     }
 
@@ -92,10 +92,10 @@ contract CampaignTokenFundraiser {
         require(state == State.CollectingFunds);
 
         state = State.Refunding;
-        StateChanged(state, "invalidate");
+        emit StateChanged(state, "invalidate");
         refund();        
         state = State.Canceled;
-        StateChanged(state, "invalidate");
+        emit StateChanged(state, "invalidate");
     }
 
     function sendTokens() public {
@@ -107,7 +107,7 @@ contract CampaignTokenFundraiser {
         }
         
         state = State.Completed;
-        StateChanged(state, "sendTokens");
+        emit StateChanged(state, "sendTokens");
     }
 
     function refund() public {
@@ -121,7 +121,7 @@ contract CampaignTokenFundraiser {
     function sendTokensToBeneficiary() private onlyOwner {
         address(beneficiary).transfer(this.balance);
         state = State.WaitingForTokens;
-        StateChanged(state, "sendTokensToBeneficiary");
+        emit StateChanged(state, "sendTokensToBeneficiary");
     }
 
     function getCampaignBalance() view public returns (uint) {
