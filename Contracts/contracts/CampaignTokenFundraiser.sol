@@ -132,6 +132,10 @@ contract CampaignTokenFundraiser {
         return participants.length;
     }
 
+    function getState() view public returns (State) {
+        return state;
+    }
+
     /**
      * @dev Close the campaign if `endDate` has not passed and if funds have been collected
      */
