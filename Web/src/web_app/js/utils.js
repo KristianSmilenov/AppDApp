@@ -73,26 +73,22 @@ function saveContractToDB(address, params) {
         });
 }
 
-
 function getContractsFromDB() {
     return $.get(apiConfig.base + apiConfig.campaigns);
 }
-
 
 async function getCampaignBalance(campaignAddress) {
     return new Promise(async (resolve, reject) => {
         var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
         fundraiserContract.methods.getCampaignBalance().call(
             { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-                if(error)
-                    reject(err);
-                else
-                    resolve(result);
+                if(error) reject(error);
+                else resolve(result);
             });
     });
 }
 
-function getState(enumVal) {
+function stateEnumToString(enumVal) {
     return ["Collecting Funds", "Waiting for Tokens", "Refunding", "Completed", "Canceled"][enumVal];
 }
 
@@ -100,23 +96,24 @@ async function getCampaignState(campaignAddress) {
     return new Promise(async (resolve, reject) => {
     var userAddress = await getMetaMaskAccount();
     var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
-    fundraiserContract.methods.getState().call(
-        { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
-            if(error)
-                    reject(err);
-                else
-                    resolve(getState(result));
+        fundraiserContract.methods.getState().call( { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+            if(error) reject(error);
+            else resolve(stateEnumToString(result));
         });
     });
 }
 
-async function getCampaignParticipantsData() {
-    var self = this;
-    var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
-    fundraiserContract.methods.getParticipantsNumber().call(
-        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-            self.contracts.tokenFundraiserInfo.details = result + " participants";
+async function getCampaignParticipantsCount(campaignAddress) {
+    return new Promise(async (resolve, reject) => {
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+
+        fundraiserContract.methods
+        .getParticipantsNumber()
+        .call( { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
+            if(error) reject(error);
+            else resolve(result);
         });
+    });
 }
 
 async function finalizeCampaign() {

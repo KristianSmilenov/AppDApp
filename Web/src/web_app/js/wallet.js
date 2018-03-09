@@ -72,11 +72,18 @@
           this.refreshGrid();
       },
 
-      contributeToCampaign: async function(address) {
-        await contributeToCampaign(address, await getMetaMaskAccount(), 0.01);
+      contributeToCampaign: async function(campaignAddress) {
+        await contributeToCampaign(campaignAddress, await getMetaMaskAccount(), 0.01);
       },
 
-      getCampaignParticipantsData: getCampaignParticipantsData,        
+      getCampaignParticipantsCount: async function(campaignAddress) {
+        var count = await getCampaignParticipantsCount(campaignAddress);
+        this.savedCampaigns
+          .find(c => c.fundraiserContractAddress == campaignAddress)
+          .participantCount = count;
+
+          this.refreshGrid();
+      },
       finalizeCampaign: finalizeCampaign,
       
       deployContract: deployContract,

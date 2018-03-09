@@ -28,11 +28,13 @@
 
             var bal = await getCampaignBalance(campaignAddress);
             var prog = Number(bal) / this.campaignDetailData.minCap * 100;
+            var pCount = await getCampaignParticipantsCount(campaignAddress);
 
             prog = parseInt(Math.min(100, prog));
 
             this.campaignDetailData.progress = prog;
-            this.campaignDetailData.state = await getCampaignState(campaignAddress);;
+            this.campaignDetailData.state = await getCampaignState(campaignAddress);
+            this.campaignDetailData.participantCount = pCount;
 
             this.refreshModal();
 
