@@ -79,41 +79,41 @@ function getContractsFromDB() {
 }
 
 
-function getCampaignContractData() {
+async function getCampaignContractData() {
     var self = this;
     var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
     fundraiserContract.methods.getCampaignBalance().call(
-        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.contracts.tokenFundraiserInfo.details = result + " balance";
         });
 }
 
-function getCampaignParticipantsData() {
+async function getCampaignParticipantsData() {
     var self = this;
     var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
     fundraiserContract.methods.getParticipantsNumber().call(
-        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.contracts.tokenFundraiserInfo.details = result + " participants";
         });
 }
 
-function finalizeCampaign() {
+async function finalizeCampaign() {
     var self = this;
     var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
     fundraiserContract.methods.close().send(
-        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.contracts.tokenFundraiserInfo.details = result;
         });
 }
 
-function deployContract(bytecode, abi, params) {
+async function deployContract(bytecode, abi, params) {
     var self = this;
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         var contract = new web3.eth.Contract(abi);
         contract.deploy({
             data: bytecode,
             arguments: params
-        }).send({ from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, transactionHash) {
+        }).send({ from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, transactionHash) {
             if (error) {
                 reject({ error: true, message: error.message });
             }
@@ -177,10 +177,10 @@ function deployFundsharesToken() {
         });
 }
 
-function purchaseFundshares() {
+async function purchaseFundshares() {
     var self = this;
     var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
-    fundsharesTokenContract.methods.buyTokens().send({ from: self.userAddress, value: 1 * ethToWei, gas: gas, gasPrice: gasPrice })
+    fundsharesTokenContract.methods.buyTokens().send({ from: await getMetaMaskAccount(), value: 1 * ethToWei, gas: gas, gasPrice: gasPrice })
         .on('confirmation', function (confirmationNumber, receipt) {
             self.purchaseFundsharesReceipt = receipt;
         })
@@ -188,11 +188,11 @@ function purchaseFundshares() {
 
 }
 
-function sendEthToFundshares() {
+async function sendEthToFundshares() {
     var self = this;
     var weiValue = parseFloat(this.sendValueAmount) * ethToWei;
     web3.eth.sendTransaction({
-        from: self.userAddress, to: self.sendToAddress, value: weiValue,
+        from: await getMetaMaskAccount(), to: self.sendToAddress, value: weiValue,
         gasPrice: gasPrice, gas: gas
     }, function (err, txhash) {
         if (err && err.message) {
@@ -203,11 +203,11 @@ function sendEthToFundshares() {
     })
 }
 
-function viewPurchasedFundshares() {
+async function viewPurchasedFundshares() {
     var self = this;
     var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
     fundsharesTokenContract.methods.balanceOf(self.purchasedFundsharesAddress).call(
-        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+        { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.purchasedFundsharesBalance = result;
         });
 }

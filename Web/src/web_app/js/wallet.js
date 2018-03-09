@@ -37,10 +37,6 @@
         .catch(err => console.log(err));
       },
 
-      getMetaMaskAccount: async function() {
-        this.userAddress = await getMetaMaskAccount();
-      },
-
       invalidateCampaign: async function(campaignAddress) {
         var self = this;
         var userAddress = await getMetaMaskAccount();
@@ -68,13 +64,13 @@
       getCampaignContractData: getCampaignContractData,
       getCampaignParticipantsData: getCampaignParticipantsData,        
       finalizeCampaign: finalizeCampaign,
-      contributeToCampaign: function() {
+      contributeToCampaign: async function() {
         //TODO: remove the whole method
         contributeToCampaign
         // transfer funds to the crowdfunding address
         var self = this;
         var fundraiser = self.contracts.tokenFundraiserInfo.instance;
-        fundraiser.methods.buyTokens().send({ from: self.userAddress, value: ethToWei / 1.0e15, gas: gas, gasPrice: gasPrice })
+        fundraiser.methods.buyTokens().send({ from: await getMetaMaskAccount(), value: ethToWei / 1.0e15, gas: gas, gasPrice: gasPrice })
             .on('transactionHash', function (hash) {
                 self.campaignContributionTx = hash;
             })
