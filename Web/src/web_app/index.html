@@ -143,19 +143,17 @@
         <div class="row no-gutters popup-gallery">
 
           <div class="col-lg-4 col-sm-6"  v-for="campaign in savedCampaigns">
-            <a class="portfolio-box" v-bind:href="'campaign.html?campignId=' + campaign._id">
+            <a class="portfolio-box" v-on:click="openModal(campaign._id)">
               <img class="img-fixed" v-bind:src="campaign.imgSrc" alt="">
               <div class="portfolio-box-caption">
                 <div class="portfolio-box-caption-content">
                   <div class="project-name">
-                    {{ campaign.description }}
+                    {{ campaign.description.substring(0, 100) + '...' }}
                     {{campaign.imSrc}}
                   </div>
                   <br>
                   <div class="project-category text-faded">
-                    Min cap: {{ campaign.minCap }}
-                    <br>
-                    Conversion rate: {{ campaign.conversionRate }}
+                    Min cap: {{ campaign.minCap / 1.0e18 }} ETH
                     <br>
                     End date: {{ new Date(campaign.endDate * 1000).toLocaleDateString() + " " + new Date(campaign.endDate * 1000).toLocaleTimeString() }}
                   </div>
@@ -201,7 +199,54 @@
         </div>
       </div>
     </section>
+    
+    <!-- Modal -->
+    <div id="myModal" class="modal modal-lg fade" role="dialog">
+        <div class="modal-dialog">
+      
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+                <img class="img-fixed" v-bind:src="campaignDetailData.imgSrc" alt="">
+            </div>
+            <div class="modal-body">
+              
+                <div class="project-name">
+                  
+                  <table class='wider-columns'>
+                      <tr>
+                        <td>Min cap:</td>
+                        <td>{{ campaignDetailData.minCap / 1.0e18 }} ETH</td>
+                      </tr>
+                      <tr>
+                        <td>Conversion rate:</td>
+                        <td>{{ campaignDetailData.conversionRate / 1.0e18 }} ETH for a token</td>
+                      </tr>
+                      <tr>
+                        <td>End date:</td>
+                        <td>{{ new Date(campaignDetailData.endDate * 1000).toLocaleDateString() + " " + new Date(campaignDetailData.endDate * 1000).toLocaleTimeString() }}</td>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                  </table>
+                  <h4 style="padding: 50px;">{{ campaignDetailData.description.substring(0, 500) }}</h4>
+                  
+                <button style="margin-left: 50px;" type="button" class="btn btn-success btn-lg" v-on:click="participateInCampaign()">&nbsp;&nbsp;&nbsp;Participate&nbsp;&nbsp;&nbsp;</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+      
+        </div>
+      </div>
+
     </div>
+    <!-- End of app -->
 
     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
