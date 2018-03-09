@@ -4,6 +4,10 @@ const apiConfig = {
     contracts: "/contracts"
 };
 
+const ethToWei = 1.0e18;
+const gasPrice = 5000000000;
+const gas = 4312388;
+
 function initWeb3() {
   if (typeof web3 !== 'undefined') {
     console.log('Web3 injected browser: OK.')
@@ -15,24 +19,18 @@ function initWeb3() {
   }
 }
 
-function initAccount() {
-  var account = web3.eth.accounts[0];
-  var accountInterval = setInterval(function () {
-    if (web3.eth.accounts[0] !== account) {
-      account = web3.eth.accounts[0];
-      updateInterface();
-    }
-  }, 100);
-}
-
 function getMetaMaskAccount() {
-    var self = this;
-    web3.eth.getAccounts(function (error, accounts) {
-        if (!error && accounts.length > 0) {
-            self.userAddress = accounts[0];
-        }
+    return new Promise((resolve, reject) => {
+        web3.eth.getAccounts(function (error, accounts) {
+            if (!error && accounts.length > 0) {
+                resolve(accounts[0]);
+            } else {
+                resolve();
+            }
+        });
     });
 }
+
 function deployCrowdfundingContract() {
     var self = this;
     this.$http.get(apiConfig.base + apiConfig.contracts + '/CampaignTokenFundraiser')
@@ -85,7 +83,7 @@ function getCampaignContractData() {
     var self = this;
     var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
     fundraiserContract.methods.getCampaignBalance().call(
-        { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.contracts.tokenFundraiserInfo.details = result + " balance";
         });
 }
@@ -94,7 +92,7 @@ function getCampaignParticipantsData() {
     var self = this;
     var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
     fundraiserContract.methods.getParticipantsNumber().call(
-        { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.contracts.tokenFundraiserInfo.details = result + " participants";
         });
 }
@@ -103,7 +101,7 @@ function finalizeCampaign() {
     var self = this;
     var fundraiserContract = self.contracts.tokenFundraiserInfo.instance;
     fundraiserContract.methods.close().send(
-        { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.contracts.tokenFundraiserInfo.details = result;
         });
 }
@@ -115,7 +113,7 @@ function deployContract(bytecode, abi, params) {
         contract.deploy({
             data: bytecode,
             arguments: params
-        }).send({ from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, transactionHash) {
+        }).send({ from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, transactionHash) {
             if (error) {
                 reject({ error: true, message: error.message });
             }
@@ -130,21 +128,31 @@ function deployContract(bytecode, abi, params) {
     });
 }
 
-function contributeToCampaign() {
-    // transfer funds to the crowdfunding address
-    var self = this;
-    var fundraiser = self.contracts.tokenFundraiserInfo.instance;
-    fundraiser.methods.buyTokens().send({ from: self.userAddress, value: self.config.ethToWei / 1.0e15, gas: self.config.gas, gasPrice: self.config.gasPrice })
-        .on('transactionHash', function (hash) {
-            self.campaignContributionTx = hash;
-        })
+function contributeToCampaign(campaignContractAddress, userAddress, amountETH) {
+    return new Promise(async (resolve, reject) => {
+        if(campaignContractAddress == '') reject('Campaign address cannot be empty!');
+        if(userAddress == '') reject('User address cannot be empty!');
+        if(amountETH <= 0) reject('Amount should be non-negative!');
+
+        var contract = await getContractByAddress('CampaignTokenFundraiser', campaignContractAddress);
+        contract.methods.buyTokens()
+        .send({ from: userAddress, value: parseInt(amountETH * ethToWei), gas: gas, gasPrice: gasPrice })
         .on('confirmation', function (confirmationNumber, receipt) {
-            self.campaignContributionTx = receipt;
+            resolve(receipt);
         })
-        .on('receipt', function (receipt) {
-            console.log(receipt);
-        })
-        .on('error', console.error);
+        .on('error', reject);
+    });
+}
+
+function getContractByAddress(name, address) {
+    return new Promise((resolve, reject) => {
+        $.get(apiConfig.base + apiConfig.contracts + '/' + name)
+            .then(response => {
+                var contract = new web3.eth.Contract(response.abi, address);
+                resolve(contract);
+            })
+            .catch(reject);
+    });
 }
 
 function deployFundsharesToken() {
@@ -172,7 +180,7 @@ function deployFundsharesToken() {
 function purchaseFundshares() {
     var self = this;
     var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
-    fundsharesTokenContract.methods.buyTokens().send({ from: self.userAddress, value: 1 * self.config.ethToWei, gas: self.config.gas, gasPrice: self.config.gasPrice })
+    fundsharesTokenContract.methods.buyTokens().send({ from: self.userAddress, value: 1 * ethToWei, gas: gas, gasPrice: gasPrice })
         .on('confirmation', function (confirmationNumber, receipt) {
             self.purchaseFundsharesReceipt = receipt;
         })
@@ -182,10 +190,10 @@ function purchaseFundshares() {
 
 function sendEthToFundshares() {
     var self = this;
-    var weiValue = parseFloat(this.sendValueAmount) * self.config.ethToWei;
+    var weiValue = parseFloat(this.sendValueAmount) * ethToWei;
     web3.eth.sendTransaction({
         from: self.userAddress, to: self.sendToAddress, value: weiValue,
-        gasPrice: self.config.gasPrice, gas: self.config.gas
+        gasPrice: gasPrice, gas: gas
     }, function (err, txhash) {
         if (err && err.message) {
             alert('error: ' + err.message);
@@ -199,7 +207,7 @@ function viewPurchasedFundshares() {
     var self = this;
     var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
     fundsharesTokenContract.methods.balanceOf(self.purchasedFundsharesAddress).call(
-        { from: self.userAddress, gas: self.config.gas, gasPrice: self.config.gasPrice }, function (error, result) {
+        { from: self.userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             self.purchasedFundsharesBalance = result;
         });
 }

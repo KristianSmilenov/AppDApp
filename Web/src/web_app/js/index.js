@@ -1,8 +1,7 @@
-
 (function () {
 
     initWeb3();
-    initAccount();
+
     $('#myModal').modal('hide');
   
     var app = new Vue({
@@ -10,7 +9,8 @@
       data: {
         modalVisible: true,
         savedCampaigns: [],
-        campaignDetailData: {description: 'asd'}
+        campaignDetailData: {description: 'asd'},
+        participationAmount: 0
       },
       methods: {
         fetchContractsFromDB: function () {
@@ -27,9 +27,14 @@
             $('#myModal').modal();
         },
 
-        participateInCampaign: function() {
+        participateInCampaign: async function() {
             $('#myModal').modal('hide');
-            var campaign = this.campaignDetailData;
+
+            var userAddress = await getMetaMaskAccount();
+
+            contributeToCampaign(this.campaignDetailData.fundraiserContractAddress, userAddress, Number(this.participationAmount))
+            .then()
+            .catch(alert)
         }
       },
       created: function () {

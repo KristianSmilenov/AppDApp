@@ -233,7 +233,7 @@
                       </tr>
                   </table>
                   <h4 style="padding: 50px;">{{ campaignDetailData.description.substring(0, 500) }}</h4>
-                  
+                  <input type=number v-model="participationAmount">
                 <button style="margin-left: 50px;" type="button" class="btn btn-success btn-lg" v-on:click="participateInCampaign()">&nbsp;&nbsp;&nbsp;Participate&nbsp;&nbsp;&nbsp;</button>
                 </div>
             </div>
@@ -265,6 +265,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
     
     <script src="lib/web3.min.js"></script>
+    <script src="./lib/hooked-web3-provider.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/index.js"></script>
 

@@ -1,7 +1,6 @@
 (function () {
 
   initWeb3();
-  initAccount();
 
   var app = new Vue({
     el: '#app',
@@ -14,13 +13,6 @@
       userAddress: '',
       sendToAddress: '',
       sendValueAmount: '',
-      config: {
-        gasPrice: 5000000000, //(5 Shannon)
-        gas: 4312388,
-        salt: "m/0'/0'/0'",
-        ethToWei: 1.0e18,
-        ethHost: "http://localhost:8545"
-      },
       savedContracts: 'asd',
       contracts: {
         fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
@@ -32,8 +24,10 @@
       purchasedFundsharesAddress: ""
     },
     methods: {
-      getMetaMaskAccount: getMetaMaskAccount,
-      
+      getMetaMaskAccount: async function() {
+        this.userAddress = await getMetaMaskAccount();
+      },
+
       deployContract: deployContract,
       deployCrowdfundingContract: deployCrowdfundingContract,
       deployFundsharesToken: deployFundsharesToken,
@@ -41,7 +35,24 @@
       getCampaignContractData: getCampaignContractData,
       getCampaignParticipantsData: getCampaignParticipantsData,        
       finalizeCampaign: finalizeCampaign,
-      contributeToCampaign: contributeToCampaign,
+      contributeToCampaign: function() {
+        //TODO: remove the whole method
+        contributeToCampaign
+        // transfer funds to the crowdfunding address
+        var self = this;
+        var fundraiser = self.contracts.tokenFundraiserInfo.instance;
+        fundraiser.methods.buyTokens().send({ from: self.userAddress, value: ethToWei / 1.0e15, gas: gas, gasPrice: gasPrice })
+            .on('transactionHash', function (hash) {
+                self.campaignContributionTx = hash;
+            })
+            .on('confirmation', function (confirmationNumber, receipt) {
+                self.campaignContributionTx = receipt;
+            })
+            .on('receipt', function (receipt) {
+                console.log(receipt);
+            })
+            .on('error', console.error);
+      },
 
       viewPurchasedFundshares: viewPurchasedFundshares,
       purchaseFundshares: purchaseFundshares,
