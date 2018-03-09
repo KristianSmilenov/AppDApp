@@ -49,9 +49,9 @@
         <br>
         <span>Token fundraiser contract: {{contracts.tokenFundraiserInfo.address}}</span><br/>
 
-        <button v-on:click="readCrowdfundingContractData()">Get collected funds</button>
-        <button v-on:click="readCrowdfundingParticipantsData()">Get participants number</button>
-        <button v-on:click="finalizeCrowdfundingContract()">Finalize campaign</button>
+        <button v-on:click="getCampaignContractData()">Get collected funds</button>
+        <button v-on:click="getCampaignParticipantsData()">Get participants number</button>
+        <button v-on:click="finalizeCampaign()">Finalize campaign</button>
         <span>Details: {{contracts.tokenFundraiserInfo.details}}</span><br/>
         <button v-on:click="contributeToCampaign()">Contribute to campaign</button><br/>
         <span>Contribution tx: {{campaignContributionTx}}</span>
@@ -73,8 +73,7 @@
 
         <div>
             <label>Send Ether to Fundshares</label>
-            <div>From: {{userAddress}}</br>
-            </div>
+            <div>From: {{userAddress}}</br></div>
             <div>To:
                 <input type="text" v-model="sendToAddress" size="40"> </input>
             </div>
@@ -85,6 +84,13 @@
                 <button v-on:click="sendEthToFundshares()">Send Ether</button>
             </div>
         </div>
+
+        <hr>
+        <br>
+        <h2>Utils:</h2>
+        <br><br>
+        <button v-on:click="getContractsFromDB()">Get Contracts from DB</button>
+        <span>{{savedContracts}}</span>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -98,8 +104,8 @@
     <script src="./lib/lightwallet.js"></script>
     <script src="./lib/async.js"></script>
     <script src="./lib/hooked-web3-provider.js"></script>
-    <script src="js/index.js"></script>
-
+    <script src="js/utils.js"></script>
+    <script src="js/wallet.js"></script>
 </body>
 
 </html>
