@@ -26,12 +26,15 @@
                 <div class="collapse navbar-collapse" id="main-nav">
                     <ul class="nav navbar-nav navbar-nav-margin-left">
                         <li class="dropdown">
-                            <a v-on:click="currentView = 'campaignsList'">Campaigns</a>
+                            <a v-on:click="changeView('campaignsList')">Campaigns</a>
                         </li>
                         <li class="dropdown">
-                            <a v-on:click="currentView = 'tokensList'">Tokens</a>
+                            <a v-on:click="changeView('tokensList')">Tokens</a>
                         </li>
                     </ul>
+                    <div class="navbar-right">
+                        <a href="https://rinkeby.etherscan.io" target="_blank" class="navbar-btn btn btn-primary">Ether Scan</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -201,8 +204,6 @@
                                             </div>
                                             <div class="form-group media-body">
                                                 <input type="text" class="form-control used" id="name" v-model="tokenContractUserAddress">
-                                                <span>{{tokenContractUserAddressBalance}}</span>
-
                                             </div>
                                             <div class=" form-group media-right">
                                                 <a data-toggle="modal" class="btn btn-white paper-shadow relative" data-animated data-z="0.5" data-hover-z="1" v-on:click="viewTokensBalance()">Check balance</a>
@@ -336,18 +337,18 @@
                             <div class="panel-body list-group">
                                 <ul v-if="currentView == 'campaignsList' || currentView == 'createCampaign'" class="list-group list-group-menu">
                                     <li class="list-group-item">
-                                        <a v-on:click="currentView = 'campaignsList'" class="link-text-color">View campaigns</a>
+                                        <a v-on:click="changeView('campaignsList')" class="link-text-color">View campaigns</a>
                                     </li>
                                     <li class="list-group-item ">
-                                        <a v-on:click="currentView = 'createCampaign'" class="link-text-color">Create campaign</a>
+                                        <a v-on:click="changeView('createCampaign')" class="link-text-color">Create campaign</a>
                                     </li>
                                 </ul>
                                 <ul v-if="currentView == 'tokensList' || currentView == 'createTokens'" class="list-group list-group-menu">
                                     <li class="list-group-item">
-                                        <a v-on:click="currentView = 'tokensList'" class="link-text-color">View tokens</a>
+                                        <a v-on:click="changeView('tokensList')" class="link-text-color">View tokens</a>
                                     </li>
                                     <li class="list-group-item ">
-                                        <a v-on:click="currentView = 'createTokens'" class="link-text-color">Create tokens</a>
+                                        <a v-on:click="changeView('createTokens')" class="link-text-color">Create tokens</a>
                                     </li>
                                 </ul>
                             </div>
