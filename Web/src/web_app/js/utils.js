@@ -48,6 +48,8 @@ function deployCrowdfundingContract() {
             self.crowdfundingContract_conversionRate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
             self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
+                    showSuccess('Crowdfunding contract created', 'Address: ' + result.contract._address);
+                    //TODO: save details of token contract as well
                     self.saveContractToDB(result.contract._address, params);
                 }).catch(result => {
                     showError(result.message);
@@ -173,15 +175,16 @@ function deployFundsharesToken() {
             var response = resp.body;
             self.contracts.fundsharesToken.bytecode = response.bytecode;
             self.contracts.fundsharesToken.abi = response.abi;
-
-            var params = ["Token1", "TKN1", 1000, 1000];
-            self.deployContract(response.bytecode, response.abi, params)
+            var params = [self.tokenContract_name, self.tokenContract_symbol, self.tokenContract_totalSupply,
+                 self.tokenContract_rate, self.tokenContract_minInvestment];
+                 self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
                     self.contracts.fundsharesToken.address = result.contract._address;
                     self.contracts.fundsharesToken.abi = result.abi;
                     self.contracts.fundsharesToken.instance = result.contract;
+                    showSuccess('Token contract created', 'Address: ' + result.contract._address);
                 }).catch(result => {
-                    showError(result.message);
+                    showError('Error creating token contract', result.message);
                 });
         }, err => {
             showError("Error getting FundSharesToken contract info.", err);
@@ -256,19 +259,11 @@ async function includeHTML() {
   }
 
 function showError(title, message) {
-    var html = '<div class="alert alert-danger" role="alert" id="bootstrap-error"><strong>' + title + ' </strong> ' + message + '</div>';
+    var html = '<div class="alert alert-danger" role="alert" id="bootstrap-error"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>' + title + ' </strong> ' + message + '</div>';
     $('#alert-placeholder').html(html);
-
-    $("#bootstrap-error").fadeTo(2000, 500).slideUp(500, function () {
-        $("#bootstrap-error").slideUp(500, () => $('#alert-placeholder').html(''));
-    });
 }
 
 function showSuccess(title, message) {
-    var html = '<div class="alert alert-success" role="alert" id="bootstrap-error"><strong>' + title + ' </strong> ' + message + '</div>';
+    var html = '<div class="alert alert-success" role="alert" id="bootstrap-success"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>' + title + ' </strong> ' + message + '</div>';
     $('#alert-placeholder').html(html);
-
-    $("#bootstrap-error").fadeTo(2000, 500).slideUp(500, function () {
-        $("#bootstrap-error").slideUp(500, () => $('#alert-placeholder').html(''));
-    });
 }
