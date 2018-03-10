@@ -132,7 +132,8 @@
       purchaseFundshares: purchaseFundshares,
       sendEthToFundshares: sendEthToFundshares,
 
-      saveContractToDB: saveContractToDB
+      saveCrowdfundingContractToDB: saveCrowdfundingContractToDB,
+      saveTokenContractToDB: saveTokenContractToDB
     }
   });
 })();

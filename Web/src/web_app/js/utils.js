@@ -1,7 +1,8 @@
 const apiConfig = {
     base: "http://localhost:10010",
     campaigns: "/campaigns",
-    contracts: "/contracts"
+    contracts: "/contracts",
+    tokens: "/tokens"
 };
 
 const ethToWei = 1.0e18;
@@ -50,7 +51,7 @@ function deployCrowdfundingContract() {
                 .then((result) => {
                     showSuccess('Crowdfunding contract created', 'Address: ' + result.contract._address);
                     //TODO: save details of token contract as well
-                    self.saveContractToDB(result.contract._address, params);
+                    self.saveCrowdfundingContractToDB(result.contract._address, params);
                 }).catch(result => {
                     showError(result.message);
                 });
@@ -59,7 +60,7 @@ function deployCrowdfundingContract() {
         });
 }
 
-function saveContractToDB(address, params) {
+function saveCrowdfundingContractToDB(address, params) {
     var body = {
         fundraiserContractAddress: address,
         beneficiaryAddress: params[0],
@@ -182,12 +183,31 @@ function deployFundsharesToken() {
                     self.contracts.fundsharesToken.address = result.contract._address;
                     self.contracts.fundsharesToken.abi = result.abi;
                     self.contracts.fundsharesToken.instance = result.contract;
+                    self.saveTokenContractToDB(result.contract._address, params);
                     showSuccess('Token contract created', 'Address: ' + result.contract._address);
                 }).catch(result => {
                     showError('Error creating token contract', result.message);
                 });
         }, err => {
             showError("Error getting FundSharesToken contract info.", err);
+        });
+}
+
+function saveTokenContractToDB(address, params) {
+    var body = {
+        address: address,
+        name: params[0],
+        symbol: params[1],
+        totalSupply: parseInt(params[2]),
+        rate: parseInt(params[3]),
+        minParticipation: parseInt(params[4])
+      };
+
+    this.$http.post(apiConfig.base + apiConfig.tokens, body)
+        .then(resp => {
+            //TODO: do stuff
+        }, err => {
+            showError("Error saving Token info.", err);
         });
 }
 
@@ -199,7 +219,6 @@ async function purchaseFundshares() {
             self.purchaseFundsharesReceipt = receipt;
         })
         .on('error', console.error);
-
 }
 
 async function sendEthToFundshares() {
