@@ -34,13 +34,7 @@
       sendToAddress: '',
       sendValueAmount: '',
       savedCampaigns: [],
-      savedTokens: [],
-      contracts: {
-        fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
-      },
-      //purchaseFundsharesReceipt: "",
-      //purchasedFundsharesBalance: "",
-      //purchasedFundsharesAddress: ""
+      savedTokens: []
     },
     methods: {
       setActiveTokenContract: function(token) {
@@ -144,11 +138,9 @@
       
       deployContract: deployContract,
       deployCrowdfundingContract: deployCrowdfundingContract,
-      deployFundsharesToken: deployFundsharesToken,
+      deployTokenContract: deployTokenContract,
 
       viewTokensBalance: viewTokensBalance,
-      purchaseFundshares: purchaseFundshares,
-      sendEthToFundshares: sendEthToFundshares,
 
       saveCrowdfundingContractToDB: saveCrowdfundingContractToDB,
       saveTokenContractToDB: saveTokenContractToDB

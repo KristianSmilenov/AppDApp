@@ -173,20 +173,15 @@ async function getContractByAddress(name, address) {
     });
 }
 
-function deployFundsharesToken() {
+function deployTokenContract() {
     var self = this;
     this.$http.get(apiConfig.base + apiConfig.contracts + '/FundSharesToken')
         .then(resp => {
             var response = resp.body;
-            self.contracts.fundsharesToken.bytecode = response.bytecode;
-            self.contracts.fundsharesToken.abi = response.abi;
             var params = [self.tokenContract_name, self.tokenContract_symbol, self.tokenContract_totalSupply,
             self.tokenContract_rate, self.tokenContract_minInvestment];
             self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
-                    self.contracts.fundsharesToken.address = result.contract._address;
-                    self.contracts.fundsharesToken.abi = result.abi;
-                    self.contracts.fundsharesToken.instance = result.contract;
                     self.saveTokenContractToDB(result.contract._address, params);
                     showSuccess('Token contract created', 'Address: ' + result.contract._address);
                 }).catch(result => {
@@ -213,31 +208,6 @@ function saveTokenContractToDB(address, params) {
         }, err => {
             showError("Error saving Token info.", err);
         });
-}
-
-async function purchaseFundshares() {
-    var self = this;
-    var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
-    fundsharesTokenContract.methods.buyTokens().send({ from: await getMetaMaskAccount(), value: 1 * ethToWei, gas: gas, gasPrice: gasPrice })
-        .on('confirmation', function (confirmationNumber, receipt) {
-            self.purchaseFundsharesReceipt = receipt;
-        })
-        .on('error', console.error);
-}
-
-async function sendEthToFundshares() {
-    var self = this;
-    var weiValue = parseFloat(this.sendValueAmount) * ethToWei;
-    web3.eth.sendTransaction({
-        from: await getMetaMaskAccount(), to: self.sendToAddress, value: weiValue,
-        gasPrice: gasPrice, gas: gas
-    }, function (err, txhash) {
-        if (err && err.message) {
-            showError('error: ' + err.message);
-        } else {
-            showSuccess('Successfully sent transcation. Txhash: ' + txhash);
-        }
-    })
 }
 
 async function viewTokensBalance() {
