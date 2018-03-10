@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html class="transition-navbar-scroll top-navbar-xlarge bottom-footer" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Olympus Project</title>
+    <link href="css/admin/all.css" rel="stylesheet">
+    <link href="css/admin/app.css" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top navbar-size-large navbar-size-xlarge paper-shadow" data-z="0" data-animated
+        role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-brand navbar-brand-logo">
+                    <a href="index.html">
+                        Olympus
+                    </a>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse" id="main-nav">
+                <ul class="nav navbar-nav navbar-nav-margin-left">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Campaigns</a>
+                    </li>
+                    <li class="dropdown active">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Investments</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="parallax bg-white page-section">
+        <div class="container parallax-layer" data-opacity="true">
+            <div class="media v-middle">
+                <div class="media-body">
+                    <h1 class="text-display-2 margin-none">Crowdfunding Campaigns</h1>
+                    <p class="text-light lead">Take part in most wanted Private Sale campaigns</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="page-section">
+            <div class="row">
+                <div class="col-md-9">
+                    <div id="campaigns-list" w3-include-html="html/campaigns-list.html"></div>
+                    <!-- <div id="create-campaign" w3-include-html="html/create-campaign.html"></div> -->
+                    <!-- <div id="tokens-list" w3-include-html="html/tokens-list.html"></div> -->
+                    <!-- <div id="create-token" w3-include-html="html/create-token.html"></div> -->
+                </div>
+                <div class="col-md-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">Menu</h4>
+                        </div>
+                        <div class="panel-body list-group">
+                            <ul class="list-group list-group-menu">
+                                <li class="list-group-item active">
+                                    <a class="link-text-color">View campaigns</a>
+                                </li>
+                                <li class="list-group-item ">
+                                    <a class="link-text-color">Create campaign</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <strong>Project Olympus</strong> v0.1 &copy; Copyright 2018
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
+
+    <script src="../lib/web3.min.js"></script>
+    <script src="../lib/lightwallet.js"></script>
+    <script src="../lib/async.js"></script>
+    <script src="../lib/hooked-web3-provider.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
