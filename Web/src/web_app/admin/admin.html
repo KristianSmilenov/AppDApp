@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html class="transition-navbar-scroll top-navbar-xlarge bottom-footer" lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,62 +11,78 @@
     <link href="css/admin/all.css" rel="stylesheet">
     <link href="css/admin/app.css" rel="stylesheet">
 </head>
+
 <body>
-    <div class="navbar navbar-default navbar-fixed-top navbar-size-large navbar-size-xlarge paper-shadow" data-z="0" data-animated
-        role="navigation">
+    <div id="alert-placeholder"></div>
+    <div id="wallet-app">
+        <div class="navbar navbar-default navbar-fixed-top navbar-size-large navbar-size-xlarge paper-shadow" data-z="0" data-animated
+            role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <div class="navbar-brand navbar-brand-logo">
+                        Olympus ({{currentView}})
+                    </div>
+                </div>
+                <div class="collapse navbar-collapse" id="main-nav">
+                    <ul class="nav navbar-nav navbar-nav-margin-left">
+                        <li class="dropdown">
+                            <a v-on:click="currentView = 'campaignsList'">Campaigns</a>
+                        </li>
+                        <li class="dropdown active">
+                            <a v-on:click="currentView = 'tokensList'">Tokens</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="parallax bg-white page-section">
+            <div class="container parallax-layer" data-opacity="true">
+                <div v-show="currentView == 'campaignsList' || currentView == 'createCampaign'" class="media v-middle">
+                    <div class="media-body">
+                        <h1 class="text-display-2 margin-none">Crowdfunding Campaigns</h1>
+                        <p class="text-light lead">Take part in most wanted Private Sale campaigns</p>
+                    </div>
+                </div>
+                <div v-show="currentView == 'tokensList' || currentView == 'createTokens'" class="media v-middle">
+                    <div class="media-body">
+                        <h1 class="text-display-2 margin-none">Create an investment token</h1>
+                        <p class="text-light lead">Create an ERC token backed by real assets and allow investors to participate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container">
-            <div class="navbar-header">
-                <div class="navbar-brand navbar-brand-logo">
-                    <a href="index.html">
-                        Olympus
-                    </a>
-                </div>
-            </div>
-            <div class="collapse navbar-collapse" id="main-nav">
-                <ul class="nav navbar-nav navbar-nav-margin-left">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Campaigns</a>
-                    </li>
-                    <li class="dropdown active">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Investments</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="parallax bg-white page-section">
-        <div class="container parallax-layer" data-opacity="true">
-            <div class="media v-middle">
-                <div class="media-body">
-                    <h1 class="text-display-2 margin-none">Crowdfunding Campaigns</h1>
-                    <p class="text-light lead">Take part in most wanted Private Sale campaigns</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="page-section">
-            <div class="row">
-                <div class="col-md-9">
-                    <div id="campaigns-list" w3-include-html="html/campaigns-list.html"></div>
-                    <!-- <div id="create-campaign" w3-include-html="html/create-campaign.html"></div> -->
-                    <!-- <div id="tokens-list" w3-include-html="html/tokens-list.html"></div> -->
-                    <!-- <div id="create-token" w3-include-html="html/create-token.html"></div> -->
-                </div>
-                <div class="col-md-3">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">Menu</h4>
-                        </div>
-                        <div class="panel-body list-group">
-                            <ul class="list-group list-group-menu">
-                                <li class="list-group-item active">
-                                    <a class="link-text-color">View campaigns</a>
-                                </li>
-                                <li class="list-group-item ">
-                                    <a class="link-text-color">Create campaign</a>
-                                </li>
-                            </ul>
+            <div class="page-section">
+                <div class="row">
+                    <div class="col-md-9">
+                        <div v-show="currentView == 'campaignsList'" id="campaigns-list" w3-include-html="html/campaigns-list.html"></div>
+                        <div v-show="currentView == 'createCampaign'" id="create-campaign" w3-include-html="html/create-campaign.html"></div>
+                        <div v-show="currentView == 'tokensList'" id="tokens-list" w3-include-html="html/tokens-list.html"></div>
+                        <div v-show="currentView == 'createTokens'" id="create-token" w3-include-html="html/create-token.html"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Menu</h4>
+                            </div>
+                            <div class="panel-body list-group">
+                                <ul v-show="currentView == 'campaignsList' || currentView == 'createCampaign'" class="list-group list-group-menu">
+                                    <li class="list-group-item active">
+                                        <a class="link-text-color">View campaigns</a>
+                                    </li>
+                                    <li class="list-group-item ">
+                                        <a class="link-text-color">Create campaign</a>
+                                    </li>
+                                </ul>
+                                <ul v-show="currentView == 'tokensList' || currentView == 'createTokens'" class="list-group list-group-menu">
+                                        <li class="list-group-item active">
+                                            <a class="link-text-color">View campaigns</a>
+                                        </li>
+                                        <li class="list-group-item ">
+                                            <a class="link-text-color">Create campaign</a>
+                                        </li>
+                                    </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

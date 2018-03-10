@@ -3,7 +3,6 @@
   forceMetamask();
   initWeb3();
   await includeHTML();
-
   var app = new Vue({
     el: '#wallet-app',
     created: function () {
@@ -11,6 +10,8 @@
     },
 
     data: {
+      views: ["campaignsList", "createCampaign", "tokensList", "createTokens"],
+      currentView: "campaignsList",
       crowdfundingContract_beneficiaryAddress: '',
       crowdfundingContract_endDate: '1522576800',
       crowdfundingContract_conversionRate: 1000,
