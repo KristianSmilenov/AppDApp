@@ -188,15 +188,15 @@
                                     <div class="media v-middle s-container">
                                         <form class="form-horizontal">
                                             <div class="form-group media-left">
-                                                <span class="label label-default">CIF</span>
+                                                <span class="label label-primary">{{selectedTokenContractSymbol}}</span>
                                             </div>
                                             <div class="form-group media-body">
-                                                <input type="text" class="form-control used" id="name" v-model="purchasedFundsharesAddress">
-                                                <span>Balance: {{purchasedFundsharesBalance}}</span>
+                                                <input type="text" class="form-control used" id="name" v-model="tokenContractUserAddress">
+                                                <span>{{tokenContractUserAddressBalance}}</span>
 
                                             </div>
                                             <div class=" form-group media-right">
-                                                <a data-toggle="modal" class="btn btn-white paper-shadow relative" data-animated data-z="0.5" data-hover-z="1" v-on:click="viewPurchasedFundshares()">Check balance</a>
+                                                <a data-toggle="modal" class="btn btn-white paper-shadow relative" data-animated data-z="0.5" data-hover-z="1" v-on:click="viewTokensBalance()">Check balance</a>
                                             </div>
                                         </form>
                                     </div>
@@ -215,24 +215,30 @@
                                                         <th>Total Supply</th>
                                                         <th>Rate</th>
                                                         <th>Min participation</th>
+                                                        <th>Etherscan</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="responsive-table-body">
-                                                    <tr>
+                                                    <tr v-for="token in savedTokens" v-on:click="setActiveTokenContract(token)">
                                                         <td>
-                                                            <span class="label label-default">CIF</span>
+                                                            <span class="label label-primary">{{token.symbol}}</span>
                                                         </td>
                                                         <td>
-                                                            <span>Crypto Investoment Fund</span>
+                                                            <span>{{token.name}}</span>
                                                         </td>
                                                         <td>
-                                                            1000
+                                                            {{token.totalSupply}}
                                                         </td>
                                                         <td>
-                                                            1000CIF/1ETH
+                                                            {{token.rate}} {{token.symbol}} / 1 ETH
                                                         </td>
                                                         <td>
-                                                            250 ETH
+                                                            {{token.minParticipation}} Wei
+                                                        </td>
+                                                        <td>
+                                                            <a v-bind:href="'https://rinkeby.etherscan.io/address/' + token.address" target="_blank">
+                                                                <i class="fa fa-chain" style="font-size:18px"></i>
+                                                            </a>
                                                         </td>
                                                     </tr>
                                                 </tbody>

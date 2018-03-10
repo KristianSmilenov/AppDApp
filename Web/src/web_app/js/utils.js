@@ -11,21 +11,21 @@ const gas = 4312388;
 
 function forceMetamask() {
     var hasMetamask = (typeof web3 !== 'undefined' && window.web3.givenProvider && window.web3.givenProvider.isMetaMask);
-    if(hasMetamask) return;
+    if (hasMetamask) return;
 
     var html = '<div class="alert alert-danger" role="alert"><strong>No Metamask detected!</strong> This page requires Metamask to function properly. Please install it and refresh.</div>';
     $('body').html(html);
 }
 
 function initWeb3() {
-  if (typeof web3 !== 'undefined') {
-    console.log('Web3 injected browser: OK.')
-    window.web3 = new Web3(window.web3.givenProvider);
-  } else {
-    //TODO: implement normal wallet
-    console.log('No web3? You should consider trying MetaMask!');
-    window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-  }
+    if (typeof web3 !== 'undefined') {
+        console.log('Web3 injected browser: OK.')
+        window.web3 = new Web3(window.web3.givenProvider);
+    } else {
+        //TODO: implement normal wallet
+        console.log('No web3? You should consider trying MetaMask!');
+        window.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+    }
 }
 
 function getMetaMaskAccount() {
@@ -78,8 +78,12 @@ function saveCrowdfundingContractToDB(address, params) {
         });
 }
 
-function getContractsFromDB() {
+function getCampaignContractsFromDB() {
     return $.get(apiConfig.base + apiConfig.campaigns);
+}
+
+function getTokenContractsFromDB() {
+    return $.get(apiConfig.base + apiConfig.tokens);
 }
 
 async function getCampaignBalance(campaignAddress) {
@@ -87,7 +91,7 @@ async function getCampaignBalance(campaignAddress) {
         var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
         fundraiserContract.methods.getCampaignBalance().call(
             { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-                if(error) reject(error);
+                if (error) reject(error);
                 else resolve(result);
             });
     });
@@ -99,10 +103,10 @@ function stateEnumToString(enumVal) {
 
 async function getCampaignState(campaignAddress) {
     return new Promise(async (resolve, reject) => {
-    var userAddress = await getMetaMaskAccount();
-    var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
-        fundraiserContract.methods.getState().call( { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
-            if(error) reject(error);
+        var userAddress = await getMetaMaskAccount();
+        var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
+        fundraiserContract.methods.getState().call({ from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
+            if (error) reject(error);
             else resolve(stateEnumToString(result));
         });
     });
@@ -113,11 +117,11 @@ async function getCampaignParticipantsCount(campaignAddress) {
         var fundraiserContract = await getContractByAddress('CampaignTokenFundraiser', campaignAddress);
 
         fundraiserContract.methods
-        .getParticipantsNumber()
-        .call( { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-            if(error) reject(error);
-            else resolve(result);
-        });
+            .getParticipantsNumber()
+            .call({ from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
+                if (error) reject(error);
+                else resolve(result);
+            });
     });
 }
 
@@ -144,21 +148,21 @@ async function deployContract(bytecode, abi, params) {
 
 function contributeToCampaign(campaignContractAddress, userAddress, amountETH) {
     return new Promise(async (resolve, reject) => {
-        if(campaignContractAddress == '') reject('Campaign address cannot be empty!');
-        if(userAddress == '') reject('User address cannot be empty!');
-        if(amountETH <= 0) reject('Amount should be non-negative!');
+        if (campaignContractAddress == '') reject('Campaign address cannot be empty!');
+        if (userAddress == '') reject('User address cannot be empty!');
+        if (amountETH <= 0) reject('Amount should be non-negative!');
 
         var contract = await getContractByAddress('CampaignTokenFundraiser', campaignContractAddress);
         contract.methods.buyTokens()
-        .send({ from: userAddress, value: parseInt(amountETH * ethToWei), gas: gas, gasPrice: gasPrice })
-        .on('confirmation', function (confirmationNumber, receipt) {
-            resolve(receipt);
-        })
-        .on('error', reject);
+            .send({ from: userAddress, value: parseInt(amountETH * ethToWei), gas: gas, gasPrice: gasPrice })
+            .on('confirmation', function (confirmationNumber, receipt) {
+                resolve(receipt);
+            })
+            .on('error', reject);
     });
 }
 
-function getContractByAddress(name, address) {
+async function getContractByAddress(name, address) {
     return new Promise((resolve, reject) => {
         $.get(apiConfig.base + apiConfig.contracts + '/' + name)
             .then(response => {
@@ -177,8 +181,8 @@ function deployFundsharesToken() {
             self.contracts.fundsharesToken.bytecode = response.bytecode;
             self.contracts.fundsharesToken.abi = response.abi;
             var params = [self.tokenContract_name, self.tokenContract_symbol, self.tokenContract_totalSupply,
-                 self.tokenContract_rate, self.tokenContract_minInvestment];
-                 self.deployContract(response.bytecode, response.abi, params)
+            self.tokenContract_rate, self.tokenContract_minInvestment];
+            self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
                     self.contracts.fundsharesToken.address = result.contract._address;
                     self.contracts.fundsharesToken.abi = result.abi;
@@ -201,7 +205,7 @@ function saveTokenContractToDB(address, params) {
         totalSupply: parseInt(params[2]),
         rate: parseInt(params[3]),
         minParticipation: parseInt(params[4])
-      };
+    };
 
     this.$http.post(apiConfig.base + apiConfig.tokens, body)
         .then(resp => {
@@ -236,46 +240,21 @@ async function sendEthToFundshares() {
     })
 }
 
-async function viewPurchasedFundshares() {
+async function viewTokensBalance() {
+    if (!this.tokenContractUserAddress) { showError("Missing data", "Please enter user address"); return; }
+    if (!this.selectedTokenContractSymbol) { showError("Missing data", "Please select token contract first"); return; }
+    if (!this.selectedTokenContractAddress) { showError("Missing data", "Please select token contract first"); return; }
+
     var self = this;
-    var fundsharesTokenContract = new web3.eth.Contract(self.contracts.fundsharesToken.abi, self.contracts.fundsharesToken.address);
-    fundsharesTokenContract.methods.balanceOf(self.purchasedFundsharesAddress).call(
+    var tokenContract = await getContractByAddress('FundSharestoken', self.selectedTokenContractAddress);
+    tokenContract.methods.balanceOf(self.tokenContractUserAddress).call(
         { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
-            self.purchasedFundsharesBalance = result;
+            if (error) {
+                showError('Cannot retrieve user balance: ', err.message);
+            }
+            showSuccess('Balance check', 'User '+ self.tokenContractUserAddress + ' has ' + result + ' ' + self.selectedTokenContractSymbol + ' tokens');
         });
 }
-
-async function includeHTML() {
-    return new Promise((resolve, reject) => {
-        var z, i, elmnt, file, xhttp;
-        /*loop through a collection of all HTML elements:*/
-        z = document.getElementsByTagName("*");
-        for (i = 0; i < z.length; i++) {
-          elmnt = z[i];
-          /*search for elements with a certain atrribute:*/
-          file = elmnt.getAttribute("w3-include-html");
-          if (file) {
-            /*make an HTTP request using the attribute value as the file name:*/
-            xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = async function() {
-              if (this.readyState == 4) {
-                if (this.status == 200) {elmnt.innerHTML = this.responseText;}
-                if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
-                /*remove the attribute, and call this function once more:*/
-                elmnt.removeAttribute("w3-include-html");
-                // await includeHTML();
-                resolve();
-              }
-            }
-            xhttp.open("GET", file, true);
-            xhttp.send();
-            /*exit the function:*/
-            return;
-          }
-        }
-        resolve();
-    });
-  }
 
 function showError(title, message) {
     var html = '<div class="alert alert-danger" role="alert" id="bootstrap-error"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>' + title + ' </strong> ' + message + '</div>';

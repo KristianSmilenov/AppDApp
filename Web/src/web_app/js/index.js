@@ -2,7 +2,6 @@
 
     forceMetamask();
     initWeb3();
-    await includeHTML();
 
     $('#myModal').modal('hide');
   

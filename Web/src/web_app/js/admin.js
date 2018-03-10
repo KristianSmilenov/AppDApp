@@ -2,7 +2,7 @@
 
   forceMetamask();
   initWeb3();
-  await includeHTML();
+  
   var app = new Vue({
     el: '#wallet-app',
     created: function () {
@@ -17,30 +17,48 @@
       crowdfundingContract_conversionRate: 1000,
       crowdfundingContract_description: 'Pre-sale #1',
       crowdfundingContract_minCap: 1000,
+      
       tokenContract_name: 'Crypto Investoment Fund',
       tokenContract_symbol: 'CIF',
       tokenContract_totalSupply: '1000',
       tokenContract_rate: '1000',
       tokenContract_minInvestment: '1000',
+      
+      selectedTokenContractSymbol: '',
+      selectedTokenContractAddress: '',
+
+      tokenContractUserAddress: '',
+      tokenContractUserAddressBalance: '',
+
       userAddress: '',
       sendToAddress: '',
       sendValueAmount: '',
       savedCampaigns: [],
+      savedTokens: [],
       contracts: {
         fundsharesToken: { bytecode: "", address: "", abi: [], instance: null },
       },
-      purchaseFundsharesReceipt: "",
-      purchasedFundsharesBalance: "",
-      purchasedFundsharesAddress: ""
+      //purchaseFundsharesReceipt: "",
+      //purchasedFundsharesBalance: "",
+      //purchasedFundsharesAddress: ""
     },
     methods: {
+      setActiveTokenContract: function(token) {
+        this.selectedTokenContractSymbol = token.symbol;
+        this.selectedTokenContractAddress = token.address;
+      },
       fetchContractsFromDB: function () {
         var self = this;
-        getContractsFromDB()
+        getCampaignContractsFromDB()
         .then((campaigns) => {
             self.savedCampaigns = campaigns;
         })
         .catch(err => console.log(err));
+
+        getTokenContractsFromDB().then((tokens) => {
+            self.savedTokens = tokens;
+        })
+        .catch(err => console.log(err));  
       },
 
       invalidateCampaign: async function(campaignAddress) {
@@ -128,7 +146,7 @@
       deployCrowdfundingContract: deployCrowdfundingContract,
       deployFundsharesToken: deployFundsharesToken,
 
-      viewPurchasedFundshares: viewPurchasedFundshares,
+      viewTokensBalance: viewTokensBalance,
       purchaseFundshares: purchaseFundshares,
       sendEthToFundshares: sendEthToFundshares,
 
