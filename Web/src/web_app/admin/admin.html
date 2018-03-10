@@ -105,7 +105,7 @@
                         <template v-if="currentView == 'createCampaign'">
                             <div class="panel panel-default paper-shadow" data-z="0.5">
                                 <div class="panel-body">
-                                    <form action="#" class="form-horizontal">
+                                    <form class="form-horizontal">
                                         <div class="form-group">
                                             <label for="name" class="col-md-2 control-label">Beneficiary Address</label>
                                             <div class="col-md-6">
@@ -153,7 +153,7 @@
                                         </div>
                                         <div class="form-group margin-bottom-none">
                                             <div class="col-md-offset-2 col-md-10">
-                                                <button v-on:click="deployCrowdfundingContract()" class="btn btn-primary paper-shadow relative" data-z="0.5" data-hover-z="1" data-animated>Create Campaign</button>
+                                                <button type="button" v-on:click="deployCrowdfundingContract()" class="btn btn-primary paper-shadow relative" data-z="0.5" data-hover-z="1" data-animated>Create Campaign</button>
                                             </div>
                                         </div>
                                     </form>
@@ -174,7 +174,7 @@
                                                 
                                             </div>
                                             <div class=" form-group media-right">
-                                                <a href="#modal-update-credit-card" data-toggle="modal" class="btn btn-white paper-shadow relative" data-animated data-z="0.5"
+                                                <a data-toggle="modal" class="btn btn-white paper-shadow relative" data-animated data-z="0.5"
                                                     data-hover-z="1" v-on:click="viewPurchasedFundshares()">Check balance</a>
                                             </div>
                                         </form>
@@ -224,7 +224,7 @@
                         <template v-if="currentView == 'createTokens'">
                             <div class="panel panel-default paper-shadow" data-z="0.5">
                                 <div class="panel-body">
-                                    <form action="#" class="form-horizontal">
+                                    <form class="form-horizontal">
                                         <div class="form-group">
                                             <label for="name" class="col-md-2 control-label">Token Name</label>
                                             <div class="col-md-6">
@@ -272,7 +272,7 @@
                                         </div>
                                         <div class="form-group margin-bottom-none">
                                             <div class="col-md-offset-2 col-md-10">
-                                                <button v-on:click="deployFundsharesToken()" class="btn btn-primary paper-shadow relative" data-z="0.5" data-hover-z="1" data-animated>Create Token</button>
+                                                <button type="button" v-on:click="deployFundsharesToken()" class="btn btn-primary paper-shadow relative" data-z="0.5" data-hover-z="1" data-animated>Create Token</button>
                                             </div>
                                         </div>
                                     </form>
