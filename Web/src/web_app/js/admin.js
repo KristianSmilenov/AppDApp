@@ -119,6 +119,10 @@
 
           this.refreshGrid();
       },
+
+      convertToETH: function(wei) {
+        return web3.utils.fromWei(wei.toString(), 'ether');
+      },
       
       deployContract: deployContract,
       deployCrowdfundingContract: deployCrowdfundingContract,
