@@ -16,7 +16,7 @@
       methods: {
         fetchContractsFromDB: function () {
           var self = this;
-          getContractsFromDB()
+          getCampaignContractsFromDB()
           .then((campaigns) => {
               self.savedCampaigns = campaigns;
           })

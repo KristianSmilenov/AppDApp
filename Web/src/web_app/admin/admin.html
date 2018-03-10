@@ -33,7 +33,9 @@
                         </li>
                     </ul>
                     <div class="navbar-right">
-                        <a href="https://rinkeby.etherscan.io" target="_blank" class="navbar-btn btn btn-primary">Ether Scan</a>
+                        <span>{{myMetaMaskAddress}}</span>
+                        <a class="navbar-btn btn btn-white" v-on:click="loadMyMetaMaskAddress">My Address</a>
+                        <a href="https://rinkeby.etherscan.io" target="_blank" class="navbar-btn btn btn-white">Ether Scan</a>
                     </div>
                 </div>
             </div>

@@ -32,6 +32,7 @@
       selectedTokenContractAddress: '',
       tokenContractUserAddress: '',
 
+      myMetaMaskAddress: '',
       userAddress: '',
       //sendToAddress: '',
       //sendValueAmount: '',
@@ -49,6 +50,11 @@
             this.fetchTokensFromDB();
             break;
         }
+      },
+
+      loadMyMetaMaskAddress: async function() {
+        var address = await getMetaMaskAccount();
+        this.myMetaMaskAddress = address;
       },
 
       setActiveTokenContract: function (token) {
