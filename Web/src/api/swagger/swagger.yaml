@@ -109,6 +109,76 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+
+  /tokens:
+    x-swagger-router-controller: tokens
+    get:
+      description: Returns all tokens
+      operationId: getTokens
+      tags: 
+        - Data
+      responses:
+        "200":
+          description: Success
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                items: 
+                  $ref: "#/definitions/Tokens"
+            
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    post:
+      description: Create a token
+      operationId: createToken
+      tags: 
+        - Data
+      parameters:
+        - name: body
+          in: body
+          description: Create a new token
+          required: true
+          schema:
+            $ref: "#/definitions/Token"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Token"
+            
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /tokens/{id}:
+    x-swagger-router-controller: tokens
+    get:
+      description: Get token details
+      operationId: getToken
+      tags: 
+        - Data
+      parameters:
+        - name: id
+          in: path
+          description: The token id
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Token"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
     
 definitions:
   ErrorResponse:
@@ -120,7 +190,34 @@ definitions:
         type: boolean
       message:
         type: string
-      
+  
+  Tokens:
+    type: array
+    items: 
+      $ref: "#/definitions/Token"
+  
+  Token:
+    required:
+      - address
+      - name
+      - symbol
+      - totalSupply
+      - rate
+      - minParticipation
+    properties: 
+      address:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+      totalSupply:
+        type: number
+      rate:
+        type: number
+      minParticipation:
+        type: number
+
   Campaigns:
     type: array
     items: 
@@ -176,14 +273,12 @@ definitions:
         type: array
         items: 
           $ref: "#/definitions/ABI"
-
   ABIInput:
     properties: 
       name:
         type: string
       type:
         type: string
-  
   ABIOutput:
     properties: 
       name:

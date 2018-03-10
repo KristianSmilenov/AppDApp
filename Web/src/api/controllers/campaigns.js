@@ -1,9 +1,6 @@
 'use strict';
 
-const crypto = require('crypto');
-const storage = require('../utils/campaigns.js');
-const authTokens = ['123', 'admin', 'pass', '123qwe', 'string'];
-const secret = 'asjdhafjajgljskegkdgndfg';
+const storage = require('../utils/mongo.js');
 
 module.exports = {
     getCampaigns: getCampaigns,
@@ -23,7 +20,7 @@ function getCampaigns(req, res) {
 function getCampaign(req, res) {
     var campaignId = req.swagger.params.id.value;
     storage.getCampaignById(campaignId).then((campaign) => {
-        res.json(getCampaignModel(campaign));
+        res.json(campaign);
     }).catch(err => {
         res.status(400);
         res.json({ error: true, message: err });
