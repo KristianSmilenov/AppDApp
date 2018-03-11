@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Olympus</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css" />
+
+</head>
+
+<body>
+    <div id="alert-placeholder"></div>
+    <div id="wallet-app">          
+        <h2>Crowdfunding Campaigns</h2>
+        <table class='grid'>
+            <tr>
+                <th>Contract Addr:</th>
+                <th>Beneficiary Addr:</th>
+                <th>End Date:</th>
+                <th>Weis for a Token:</th>
+                <th>Target:</th>
+                <th>State: </th>
+                <th>Collected: </th>
+                <th>Participants: </th>
+                <th>Description:</th>
+                <th>Actions:</th>
+            </tr>
+            <tr v-for="campaign in savedCampaigns">
+                <td>{{campaign.fundraiserContractAddress}}</td>
+                <td>{{campaign.beneficiaryAddress}}</td>
+                <td>{{ new Date(campaign.endDate * 1000).toLocaleDateString() + " " + new Date(campaign.endDate * 1000).toLocaleTimeString() }}</td>
+                <td>{{campaign.conversionRate / 1.0e18 }} ETH for a token</td>
+                <td>{{campaign.minCap / 1.0e18 }} ETH</td>
+                <td>{{campaign.state}}</td>
+                <td>{{campaign.balance}}</td>
+                <td>{{campaign.participantCount}}</td>
+                <td>{{campaign.description.substring(0, 100) + '...'}}</td>
+                <td>
+                    <button class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button>
+                    <button class="btn btn-warning" v-on:click="closeCampaign(campaign.fundraiserContractAddress)">Close</button>
+                    <button class="btn btn-success" v-on:click="finalizeCampaign(campaign.fundraiserContractAddress)">Finalize</button>
+                    <button class="btn btn-info" v-on:click="refreshCampaignData(campaign.fundraiserContractAddress)">Refresh</button>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            <tr>
+                <td>Beneficiary Address:</td>
+                <td><input type="text" v-model="crowdfundingContract_beneficiaryAddress"></td>
+            </tr>
+            <tr>
+                <td>End Date:</td>
+                <td><input type="text" v-model="crowdfundingContract_endDate"></td>
+            </tr>
+            <tr>
+                <td>Conversion Rate:</td>
+                <td><input type="text" v-model="crowdfundingContract_conversionRate"></td>
+            </tr>
+            <tr>
+                <td>Target:</td>
+                <td><input type="text" v-model="convertToEther(crowdfundingContract_minCap)"></td>
+            </tr>
+            <tr>
+                <td>Description:</td>
+                <td><textarea v-model="crowdfundingContract_description"></textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2"><button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button></td>
+            </tr>
+        </table>
+        <br>
+        <br>
+
+        <button v-on:click="getCampaignParticipantsCount()">Get participants number</button>
+        <button v-on:click="closeCampaign()">Finalize campaign</button>
+        <hr>
+        <br/>
+        <br/>
+        <h2>Fundshares token</h2>
+        <button v-on:click="deployFundsharesToken()">Deploy fundshares token</button>
+        <span>Token address: {{contracts.fundsharesToken.address}}</span><br/>
+
+        <button v-on:click="purchaseFundshares()">Fundshares buyTokens()</button>
+        <span>Details: {{purchaseFundsharesReceipt}}</span><br/>
+
+        <span>Check balance of address:</span>
+        <input type="text" v-model="purchasedFundsharesAddress" />
+        <button v-on:click="viewPurchasedFundshares()">View balance</button>
+        <span>Balance: {{purchasedFundsharesBalance}}</span><br/>
+
+        <div>
+            <label>Send Ether to Fundshares</label>
+            <div>From: {{userAddress}}</br></div>
+            <div>To:
+                <input type="text" v-model="sendToAddress" size="40"> </input>
+            </div>
+            <div>Ether:
+                <input type="text" v-model="sendValueAmount">
+            </div>
+            <div>
+                <button v-on:click="sendEthToFundshares()">Send Ether</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js"></script>
+
+    <script src="../lib/web3.min.js"></script>
+    <script src="../lib/lightwallet.js"></script>
+    <script src="../lib/async.js"></script>
+    <script src="../lib/hooked-web3-provider.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

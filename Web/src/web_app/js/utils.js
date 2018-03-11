@@ -45,8 +45,11 @@ function deployCrowdfundingContract() {
     this.$http.get(apiConfig.base + apiConfig.contracts + '/CampaignTokenFundraiser')
         .then(resp => {
             var response = resp.body;
+            // smart contract use wei to calculate distribution (_weiAmount.div(conversionRate))
+            var rate = self.convertToWei(1) / self.crowdfundingContract_tokensPerEth;
+            var minInvestment = self.convertToWei(self.crowdfundingContract_minCap);
             var params = [self.crowdfundingContract_beneficiaryAddress, self.crowdfundingContract_endDate,
-            self.crowdfundingContract_conversionRate, self.crowdfundingContract_description, self.crowdfundingContract_minCap];
+            rate.toString(), self.crowdfundingContract_description, minInvestment.toString()];
             self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
                     showSuccess('Crowdfunding contract created', 'Address: ' + result.contract._address);
@@ -135,12 +138,14 @@ async function deployContract(bytecode, abi, params) {
             if (error) {
                 reject({ error: true, message: error.message });
             }
-        })
-            .on('error', error => reject({ error: true, message: error.message }))
-            .then(function (newContractInstance) {
-                console.log('info', newContractInstance.options.address);
-                resolve({ contract: newContractInstance, abi: abi });
-            });
+        }).on('transactionHash', (transactionHash) => {
+            showSuccess('Contract deployed', 'Transaction hash: ' + transactionHash);
+         })
+        .on('error', error => reject({ error: true, message: error.message }))
+        .then(function (newContractInstance) {
+            console.log('info', newContractInstance.options.address);
+            resolve({ contract: newContractInstance, abi: abi });
+        });
     }, function (error) {
         reject({ error: true, message: error.message });
     });
@@ -178,8 +183,11 @@ function deployTokenContract() {
     this.$http.get(apiConfig.base + apiConfig.contracts + '/FundSharesToken')
         .then(resp => {
             var response = resp.body;
-            var params = [self.tokenContract_name, self.tokenContract_symbol, self.tokenContract_totalSupply,
-            self.tokenContract_rate, self.tokenContract_minInvestment];
+            // smart contract use wei to calculate distribution (_weiAmount.div(conversionRate))
+            var rate = self.convertToWei(1) / self.tokenContract_tokensPerEth;
+            var minInvestment = self.convertToWei(self.tokenContract_minInvestment);
+            
+            var params = [self.tokenContract_name, self.tokenContract_symbol, self.tokenContract_totalSupply, rate.toString(), minInvestment.toString()];
             self.deployContract(response.bytecode, response.abi, params)
                 .then((result) => {
                     self.saveTokenContractToDB(result.contract._address, params);
@@ -190,6 +198,15 @@ function deployTokenContract() {
         }, err => {
             showError("Error getting FundSharesToken contract info.", err);
         });
+}
+
+function convertToWei(eth) {
+    return web3.utils.toWei(eth.toString());
+}
+
+function convertToEther(wei) {
+    if(!wei) wei = 0;
+    return web3.utils.fromWei(wei.toString(), 'ether');
 }
 
 function saveTokenContractToDB(address, params) {
@@ -211,18 +228,18 @@ function saveTokenContractToDB(address, params) {
 }
 
 async function viewTokensBalance() {
-    if (!this.tokenContractUserAddress) { showError("Missing data", "Please enter user address"); return; }
-    if (!this.selectedTokenContractSymbol) { showError("Missing data", "Please select token contract first"); return; }
-    if (!this.selectedTokenContractAddress) { showError("Missing data", "Please select token contract first"); return; }
+    if (!this.tokenContractUserAddress.trim()) { showError("Missing data", "Please enter user address"); return; }
+    if (!this.selectedTokenContractSymbol.trim()) { showError("Missing data", "Please select token contract first"); return; }
+    if (!this.selectedTokenContractAddress.trim()) { showError("Missing data", "Please select token contract first"); return; }
 
     var self = this;
     var tokenContract = await getContractByAddress('FundSharestoken', self.selectedTokenContractAddress);
-    tokenContract.methods.balanceOf(self.tokenContractUserAddress).call(
+    tokenContract.methods.balanceOf(self.tokenContractUserAddress.trim()).call(
         { from: await getMetaMaskAccount(), gas: gas, gasPrice: gasPrice }, function (error, result) {
             if (error) {
                 showError('Cannot retrieve user balance: ', err.message);
             }
-            showSuccess('Balance check', 'User '+ self.tokenContractUserAddress + ' has ' + result + ' ' + self.selectedTokenContractSymbol + ' tokens');
+            showSuccess('Balance check', 'User ' + self.tokenContractUserAddress + ' has ' + result + ' ' + self.selectedTokenContractSymbol + ' tokens');
         });
 }
 

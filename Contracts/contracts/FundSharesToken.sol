@@ -86,4 +86,3 @@ contract FundSharesToken is ERC20Basic {
         return this.balance;
     }
 }
-

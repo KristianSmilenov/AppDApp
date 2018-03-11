@@ -86,9 +86,9 @@
                 The trick is real simple, we crowd-fund a campaign.
                 If we meet our funding goal, we participate and distribute the tokens back to the participants.
                 If not, we just give the money back.
-                <strong>The best part?</strong>
+                <br/><br/><strong>The best part?</strong>
                 Everything is implemented with smart contracts, so you don't have to worry if we will run away with your money.
-                You can see the whole code on <a href="https://github.com/patlajan/AppDApp">GitHub</a>.
+                <!-- You can see the whole code on <a href="https://github.com/patlajan/AppDApp">GitHub</a>. -->
             </p>
             <a class="btn btn-light btn-xl js-scroll-trigger" href="#services">Get Started!</a>
           </div>
@@ -109,37 +109,29 @@
         <div class="row">
           <div class="col-lg-3 col-md-6 text-center">
             <div class="service-box mt-5 mx-auto">
-              <i class="fa fa-4x fa-question text-primary mb-3 sr-icons"></i>
-                    <h3><a class="nav-link js-scroll-trigger" href="#portfolio">Choose Campaigns</a></h3>
-              <!-- <p class="text-muted mb-0">Pick campaign</p> -->
+                    <h3><a class="nav-link js-scroll-trigger" href="#portfolio">1. Choose Campaigns</a></h3>
             </div>
           </div>
           <div class="col-lg-3 col-md-6 text-center">
             <div class="service-box mt-5 mx-auto">
-              <i class="fa fa-4x fa-credit-card text-primary mb-3 sr-icons"></i>
-              <h3 class="mb-3"><a class="nav-link js-scroll-trigger" href="#portfolio">Donate<br>Ethers</a></h3>
-              <!-- <p class="text-muted mb-0">You can use this theme as is, or you can make changes!</p> -->
+              <h3 class="mb-3"><a class="nav-link js-scroll-trigger" href="#portfolio">2. Donate<br>Ethers</a></h3>
             </div>
           </div>
           <div class="col-lg-3 col-md-6 text-center">
             <div class="service-box mt-5 mx-auto">
-              <i class="fa fa-4x fa-btc text-primary mb-3 sr-icons"></i>
-              <h3 class="mb-3"><a class="nav-link js-scroll-trigger" href="#portfolio">Receive<br>Tokens</a></h3>
-              <!-- <p class="text-muted mb-0">We update dependencies to keep things fresh.</p> -->
+              <h3 class="mb-3"><a class="nav-link js-scroll-trigger" href="#portfolio">3. Receive<br>Tokens</a></h3>
             </div>
           </div>
           <div class="col-lg-3 col-md-6 text-center">
             <div class="service-box mt-5 mx-auto">
-              <i class="fa fa-4x fa-usd text-primary mb-3 sr-icons"></i>
-              <h3 class="mb-3"><a class="nav-link js-scroll-trigger" href="#portfolio">Reap<br>Rewards</a></h3>
-              <!-- <p class="text-muted mb-0">You have to make your websites with love these days!</p> -->
+              <h3 class="mb-3"><a class="nav-link js-scroll-trigger" href="#portfolio">4. Reap<br>Rewards</a></h3>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="p-0" id="portfolio">      
+    <section class="p-0 bg-dark text-white" id="portfolio">      
       <div class="container-fluid p-0">
         <div class="row no-gutters popup-gallery">
 
@@ -170,8 +162,8 @@
 
     <section class="bg-dark text-white">
       <div class="container text-center">
-        <h2 class="mb-4">Nothing interesting here..<br>
-        Go back up and pick a campaign</h2>
+        <h2 class="mb-4">Ready to change your life?<br>
+        Start living your dreams, invest smart and become independent!</h2>
         <a class="btn btn-light btn-xl sr-button" href="#portfolio">Up!</a>
       </div>
     </section>
@@ -217,12 +209,12 @@
                   
                   <table class='wider-columns'>
                       <tr>
-                        <td>Min cap:</td>
+                        <td>Target:</td>
                         <td>{{ campaignDetailData.minCap / 1.0e18 }} ETH</td>
                       </tr>
                       <tr>
-                        <td>Conversion rate:</td>
-                        <td>{{ campaignDetailData.conversionRate / 1.0e18 }} ETH for a token</td>
+                        <td>Price:</td>
+                        <td>~{{ 1000 * campaignDetailData.conversionRate / convertToWei(1) }}$</td>
                       </tr>
                       <tr>
                         <td>End date:</td>
@@ -250,8 +242,9 @@
                   </table>
                   <h6 style="padding-left: 50px; padding-top: 20px;">{{ campaignDetailData.description.substring(0, 500) }}</h4>
                   <div style="padding-left: 50px; padding-top: 20px;">
-                    <input type=number v-model="participationAmount">
-                    <button style="margin-left: 50px;" type="button" class="btn btn-success btn-lg" v-on:click="participateInCampaign()">&nbsp;&nbsp;&nbsp;Participate&nbsp;&nbsp;&nbsp;</button>
+                    Enter ETH amount:
+                    <input type=number style="width: 70px;" v-model="participationAmount">
+                    <button style="margin-left: 50px;" type="button" class="btn btn-primary" v-on:click="participateInCampaign()">&nbsp;&nbsp;&nbsp;Participate&nbsp;&nbsp;&nbsp;</button>
                   </div>
                 </div>
             </div>

@@ -1,111 +1,398 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html class="transition-navbar-scroll top-navbar-xlarge bottom-footer" lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Olympus</title>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/site.css" />
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Olympus Project</title>
+    <link href="css/admin/all.css" rel="stylesheet">
+    <link href="css/admin/app.css" rel="stylesheet">
 </head>
 
 <body>
     <div id="alert-placeholder"></div>
-    <div id="wallet-app">          
-        <h2>Crowdfunding Campaigns</h2>
-        <table class='grid'>
-            <tr>
-                <th>Contract Addr:</th>
-                <th>Beneficiary Addr:</th>
-                <th>End Date:</th>
-                <th>Weis for a Token:</th>
-                <th>Min Cap:</th>
-                <th>State: </th>
-                <th>Collected: </th>
-                <th>Participants: </th>
-                <th>Description:</th>
-                <th>Actions:</th>
-            </tr>
-            <tr v-for="campaign in savedCampaigns">
-                <td>{{campaign.fundraiserContractAddress}}</td>
-                <td>{{campaign.beneficiaryAddress}}</td>
-                <td>{{ new Date(campaign.endDate * 1000).toLocaleDateString() + " " + new Date(campaign.endDate * 1000).toLocaleTimeString() }}</td>
-                <td>{{campaign.conversionRate / 1.0e18 }} ETH for a token</td>
-                <td>{{campaign.minCap / 1.0e18 }} ETH</td>
-                <td>{{campaign.state}}</td>
-                <td>{{campaign.balance}}</td>
-                <td>{{campaign.participantCount}}</td>
-                <td>{{campaign.description.substring(0, 100) + '...'}}</td>
-                <td>
-                    <button class="btn btn-danger" v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)">Invalidate</button>
-                    <button class="btn btn-warning" v-on:click="closeCampaign(campaign.fundraiserContractAddress)">Close</button>
-                    <button class="btn btn-success" v-on:click="finalizeCampaign(campaign.fundraiserContractAddress)">Finalize</button>
-                    <button class="btn btn-info" v-on:click="refreshCampaignData(campaign.fundraiserContractAddress)">Refresh</button>
-                </td>
-            </tr>
-        </table>
-        <br>
-        <table>
-            <tr>
-                <td>Beneficiary Address:</td>
-                <td><input type="text" v-model="crowdfundingContract_beneficiaryAddress"></td>
-            </tr>
-            <tr>
-                <td>End Date:</td>
-                <td><input type="text" v-model="crowdfundingContract_endDate"></td>
-            </tr>
-            <tr>
-                <td>Conversion Rate:</td>
-                <td><input type="text" v-model="crowdfundingContract_conversionRate"></td>
-            </tr>
-            <tr>
-                <td>Min Cap:</td>
-                <td><input type="text" v-model="crowdfundingContract_minCap"></td>
-            </tr>
-            <tr>
-                <td>Description:</td>
-                <td><textarea v-model="crowdfundingContract_description"></textarea></td>
-            </tr>
-            <tr>
-                <td colspan="2"><button v-on:click="deployCrowdfundingContract()">Deploy crowdfunding contract</button></td>
-            </tr>
-        </table>
-        <br>
-        <br>
-
-        <button v-on:click="getCampaignParticipantsCount()">Get participants number</button>
-        <button v-on:click="closeCampaign()">Finalize campaign</button>
-        <hr>
-        <br/>
-        <br/>
-        <h2>Fundshares token</h2>
-        <button v-on:click="deployFundsharesToken()">Deploy fundshares token</button>
-        <span>Token address: {{contracts.fundsharesToken.address}}</span><br/>
-
-        <button v-on:click="purchaseFundshares()">Fundshares buyTokens()</button>
-        <span>Details: {{purchaseFundsharesReceipt}}</span><br/>
-
-        <span>Check balance of address:</span>
-        <input type="text" v-model="purchasedFundsharesAddress" />
-        <button v-on:click="viewPurchasedFundshares()">View balance</button>
-        <span>Balance: {{purchasedFundsharesBalance}}</span><br/>
-
-        <div>
-            <label>Send Ether to Fundshares</label>
-            <div>From: {{userAddress}}</br></div>
-            <div>To:
-                <input type="text" v-model="sendToAddress" size="40"> </input>
+    <div id="wallet-app">
+        <div class="navbar navbar-default navbar-fixed-top navbar-size-large navbar-size-xlarge paper-shadow" data-z="0" data-animated
+            role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <div class="navbar-brand navbar-brand-logo">
+                        Olympus
+                    </div>
+                </div>
+                <div class="collapse navbar-collapse" id="main-nav">
+                    <ul class="nav navbar-nav navbar-nav-margin-left">
+                        <li class="dropdown">
+                            <a v-on:click="changeView('campaignsList')">Campaigns</a>
+                        </li>
+                        <li class="dropdown">
+                            <a v-on:click="changeView('tokensList')">Tokens</a>
+                        </li>
+                    </ul>
+                    <div class="navbar-right">
+                        <span>{{myMetaMaskAddress}}</span>
+                        <a class="navbar-btn btn btn-white" v-on:click="loadMyMetaMaskAddress">My Address</a>
+                        <a href="https://rinkeby.etherscan.io" target="_blank" class="navbar-btn btn btn-white">Ether Scan</a>
+                    </div>
+                </div>
             </div>
-            <div>Ether:
-                <input type="text" v-model="sendValueAmount">
+        </div>
+        <div class="parallax bg-white page-section">
+            <div class="container parallax-layer" data-opacity="true">
+                <div v-if="currentView == 'campaignsList' || currentView == 'createCampaign'" class="media v-middle">
+                    <div class="media-body">
+                        <h1 class="text-display-2 margin-none">Crowdfunding Campaigns</h1>
+                        <p class="text-light lead">Take part in most wanted Private Sale campaigns</p>
+                    </div>
+                </div>
+                <div v-if="currentView == 'tokensList' || currentView == 'createTokens'" class="media v-middle">
+                    <div class="media-body">
+                        <h1 class="text-display-2 margin-none">Create an investment token</h1>
+                        <p class="text-light lead">Create an ERC token backed by real assets and allow investors to participate</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <button v-on:click="sendEthToFundshares()">Send Ether</button>
+        </div>
+        <div class="container">
+            <div class="page-section">
+                <div class="row">
+                    <div class="col-md-9">
+                        <!-- MAIN VIEWS -->
+                        <template v-if="currentView == 'campaignsList'">
+                            <div v-if="savedCampaigns.length == 0">No campains avaialble.</div>
+                            <div v-if="savedCampaigns.length > 0">
+                                <div v-for="campaign in savedCampaigns">
+                                    <div class="panel panel-default paper-shadow" data-z="0.5">
+                                        <div class="panel-body">
+                                            <div class="media media-clearfix-xs">
+                                                <div class="media-left text-center">
+                                                    <div class="cover width-150 width-100pc-xs overlay cover-image-full hover margin-v-0-10">
+                                                        <span class="img icon-block height-130 bg-default"></span>
+                                                        <span class="overlay overlay-full padding-none icon-block bg-default">
+                                                            <span class="v-center">
+                                                            </span>
+                                                        </span>
+                                                        <span>
+                                                            <b>State:</b> {{campaign.state || 'Unknown'}}</span>
+                                                        </br>
+                                                        <span>
+                                                            <b>Active until:</b> {{ new Date(campaign.endDate * 1000).toLocaleDateString()
+                                                            }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="media-body">
+                                                    <p>
+                                                        <b>Address</b>:
+                                                        <a v-bind:href="'https://rinkeby.etherscan.io/address/' + campaign.fundraiserContractAddress" target="_blank">
+                                                            <span>{{campaign.fundraiserContractAddress}}</span>
+                                                        </a>
+                                                    </p>
+                                                    <p>
+                                                        <b>Beneficiary</b>:
+                                                        <a v-bind:href="'https://rinkeby.etherscan.io/address/' + campaign.beneficiaryAddress" target="_blank">
+                                                            <span>{{campaign.beneficiaryAddress}}</span>
+                                                        </a>
+                                                        <b>Target</b>: {{convertToEther(campaign.minCap)}} ETH</p>
+                                                    <p>
+                                                        <b>Description</b>: {{campaign.description}}</p>
+                                                    <hr class="margin-v-8" />
+
+                                                    <div class="progress">
+                                                        <div class="progress">
+                                                            <div class="progress-bar" role="progressbar" v-bind:aria-valuenow="campaign.progress" style=" background-color: #7793C4;"
+                                                                aria-valuemin="0" aria-valuemax="100" v-bind:style="'width:' + campaign.progress + '%;'">
+                                                                <div style="width: 50px; color: black;">{{ campaign.progress }}%</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <p>
+                                                        <b>Participants</b>: {{campaign.participantCount || 0}}
+                                                        <b>Price:</b> ~{{ 1000 * campaign.conversionRate / convertToWei(1) }}$
+                                                    </p>
+                                                    <br/>
+                                                </div>
+                                                <div class="media-right text-center">
+                                                    <a v-on:click="refreshCampaignData(campaign.fundraiserContractAddress)" class="btn btn-white btn-flat paper-shadow" data-z="0"
+                                                        data-hover-z="1">
+                                                        Refresh
+                                                    </a>
+                                                    <a v-on:click="closeCampaign(campaign.fundraiserContractAddress)" class="btn btn-white btn-flat paper-shadow" data-z="0"
+                                                        data-hover-z="1">
+                                                        Close
+                                                    </a>
+                                                    <a v-on:click="finalizeCampaign(campaign.fundraiserContractAddress)" class="btn btn-white btn-flat paper-shadow" data-z="0"
+                                                        data-hover-z="1">
+                                                        Finalize
+                                                    </a>
+                                                    <a v-on:click="invalidateCampaign(campaign.fundraiserContractAddress)" class="btn btn-white btn-flat paper-shadow" data-z="0"
+                                                        data-hover-z="1">
+                                                        Invalidate
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-if="currentView == 'createCampaign'">
+                            <div class="panel panel-default paper-shadow" data-z="0.5">
+                                <div class="panel-body">
+                                    <form class="form-horizontal">
+                                        <div class="alert alert-info">
+                                            <span>
+                                                You are going to create a
+                                                <b>Crowdfunding Campaign</b> that can be executed if the target of
+                                                <b>{{crowdfundingContract_minCap}} ETH
+                                                </b> is reached before
+                                                <b>{{ new Date(crowdfundingContract_endDate * 1000).toLocaleDateString() }}</b>.
+                                            </span>
+                                            <br/>
+                                            <br/>
+                                            <span>
+                                                If successful, the campaign will send all collected funds to
+                                                <b>{{crowdfundingContract_beneficiaryAddress}}</b>
+                                                and will then distribute all purchased tokens to contributors at an estimated price
+                                                <b>~{{1000 / crowdfundingContract_tokensPerEth}}$</b>. Please have in mind
+                                                that if campaign is not successful, all funds will be returned.
+                                            </span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-md-2 control-label">Beneficiary Address</label>
+                                            <div class="col-md-8">
+                                                <div class="form-control-material">
+                                                    <!-- <button class="dropdown-toggle" data-toggle="dropdown">Private sales <span class="caret"></span></button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a>Home page</a></li>
+                                                            <li><a >Pricing</a></li>
+                                                            <li><a>Tutors</a></li>
+                                                        </ul> -->
+                                                    <input type="text" class="form-control used" id="name" v-model="crowdfundingContract_beneficiaryAddress">
+                                                    <label for="name">Beneficiary Address</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address" class="col-md-2 control-label">End Date</label>
+                                            <div class="col-md-8">
+                                                <div class="form-control-material">
+                                                    <textarea class="form-control used" v-model="crowdfundingContract_endDate">4/1/2018 1:00:00 PM</textarea>
+                                                    <label for="address">End Date</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-md-2 control-label">Conversion Rate</label>
+                                            <div class="col-md-8">
+                                                <div class="form-control-material">
+                                                    <input type="text" class="form-control used" id="name" v-model="crowdfundingContract_tokensPerEth">
+                                                    <label for="tokenRate">User will get {{crowdfundingContract_tokensPerEth}} tokens for 1 ETH</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-md-2 control-label">Campaign target</label>
+                                            <div class="col-md-8">
+                                                <div class="form-control-material">
+                                                    <input type="text" class="form-control used" id="name" v-model="crowdfundingContract_minCap">
+                                                    <label for="name">Investment target that will allow execution of the campaign</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address" class="col-md-2 control-label">Description</label>
+                                            <div class="col-md-6">
+                                                <div class="form-control-material">
+                                                    <textarea class="form-control used" v-model="crowdfundingContract_description"></textarea>
+                                                    <label for="address">More details about the investment opportunity</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group margin-bottom-none">
+                                            <div class="col-md-offset-2 col-md-10">
+                                                <button type="button" v-on:click="deployCrowdfundingContract()" class="btn btn-primary paper-shadow relative" data-z="0.5"
+                                                    data-hover-z="1" data-animated>Create Campaign</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-if="currentView == 'tokensList'">
+                            <div class="panel panel-default paper-shadow" data-z="0.5">
+                                <div class="panel-body">
+                                    <div class="media v-middle s-container">
+                                        <form class="form-horizontal">
+                                            <div class="form-group media-left">
+                                                <span class="label label-primary">{{selectedTokenContractSymbol}}</span>
+                                            </div>
+                                            <div class="form-group media-body">
+                                                <input type="text" class="form-control used" id="name" v-model="tokenContractUserAddress">
+                                            </div>
+                                            <div class=" form-group media-right">
+                                                <a data-toggle="modal" class="btn btn-white paper-shadow relative" data-animated data-z="0.5" data-hover-z="1" v-on:click="viewTokensBalance()">Check balance</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="savedTokens.length == 0">No tokens avaialble.</div>
+                            <div v-if="savedTokens.length > 0" class="panel panel-default paper-shadow" data-z="0.5">
+                                <div class="panel-body">
+                                    <div class="media v-middle s-container">
+                                        <div class="table-responsive">
+                                            <table class="table v-middle">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Symbol</th>
+                                                        <th>Name</th>
+                                                        <th>Total Supply</th>
+                                                        <th>Rate</th>
+                                                        <th>Min participation</th>
+                                                        <th>Etherscan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="responsive-table-body">
+                                                    <tr v-for="token in savedTokens" v-on:click="setActiveTokenContract(token)">
+                                                        <td>
+                                                            <span class="label label-primary">{{token.symbol}}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span>{{token.name}}</span>
+                                                        </td>
+                                                        <td>
+                                                            {{token.totalSupply}}
+                                                        </td>
+                                                        <td>
+                                                            {{convertToWei(1) / token.rate}} {{token.symbol}} / 1 ETH
+                                                        </td>
+                                                        <td>
+                                                            {{convertToEther(token.minParticipation)}} ETH
+                                                        </td>
+                                                        <td>
+                                                            <a v-bind:href="'https://rinkeby.etherscan.io/address/' + token.address" target="_blank">
+                                                                <i class="fa fa-chain" style="font-size:18px"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template v-if="currentView == 'createTokens'">
+                            <div class="panel panel-default paper-shadow" data-z="0.5">
+                                <div class="panel-body">
+                                    <form class="form-horizontal">
+                                        <div class="alert alert-info">
+                                            <span>You are going to create an ERC20 token
+                                                <b>{{tokenContract_name}}</b> with a total supply of
+                                                <b>{{tokenContract_totalSupply}} {{tokenContract_symbol}}</b>.</span>
+
+                                            <span>Minimum required investment is
+                                                <b>{{tokenContract_minInvestment}} ETH</b>. Estimated token price is
+                                                <b>{{1000 / tokenContract_tokensPerEth}}$</b>. Estimated token valuation is
+                                                <b>{{tokenContract_totalSupply / tokenContract_tokensPerEth}} ETH</b>.</span>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-md-2 control-label">Token Name</label>
+                                            <div class="col-md-6">
+                                                <div class="form-control-material">
+                                                    <input type="text" class="form-control used" id="name" v-model="tokenContract_name">
+                                                    <label for="name">Token Name</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address" class="col-md-2 control-label">Token Symbol</label>
+                                            <div class="col-md-6">
+                                                <div class="form-control-material">
+                                                    <input type="text" class="form-control used" id="symbol" v-model="tokenContract_symbol">
+                                                    <label for="symbol">Token Symbol</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-md-2 control-label">Conversion Rate</label>
+                                            <div class="col-md-6">
+                                                <div class="form-control-material">
+                                                    <input type="number" class="form-control used" id="tokenRate" v-model="tokenContract_tokensPerEth">
+                                                    <label for="tokenRate">User will get {{tokenContract_tokensPerEth}} {{tokenContract_symbol}} tokens
+                                                        for 1 ETH</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-md-2 control-label">Total Token Supply</label>
+                                            <div class="col-md-6">
+                                                <div class="form-control-material">
+                                                    <input type="number" class="form-control used" id="totalSupply" v-model="tokenContract_totalSupply">
+                                                    <label for="totalSupply">{{tokenContract_totalSupply}} {{tokenContract_symbol}} available in total
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address" class="col-md-2 control-label">Minimal Investment</label>
+                                            <div class="col-md-6">
+                                                <div class="form-control-material">
+                                                    <input type="number" class="form-control used" id="minInvestment" v-model="tokenContract_minInvestment">
+                                                    <label for="minInvestment">Investors needs to send at least {{tokenContract_minInvestment}} ETH</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group margin-bottom-none">
+                                            <div class="col-md-offset-2 col-md-10">
+                                                <button type="button" v-on:click="deployTokenContract()" class="btn btn-primary paper-shadow relative" data-z="0.5" data-hover-z="1"
+                                                    data-animated>Create Token</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- END VIEWS -->
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">Menu</h4>
+                            </div>
+                            <div class="panel-body list-group">
+                                <ul v-if="currentView == 'campaignsList' || currentView == 'createCampaign'" class="list-group list-group-menu">
+                                    <li class="list-group-item">
+                                        <a v-on:click="changeView('campaignsList')" class="link-text-color">View campaigns</a>
+                                    </li>
+                                    <li class="list-group-item ">
+                                        <a v-on:click="changeView('createCampaign')" class="link-text-color">Create campaign</a>
+                                    </li>
+                                </ul>
+                                <ul v-if="currentView == 'tokensList' || currentView == 'createTokens'" class="list-group list-group-menu">
+                                    <li class="list-group-item">
+                                        <a v-on:click="changeView('tokensList')" class="link-text-color">View tokens</a>
+                                    </li>
+                                    <li class="list-group-item ">
+                                        <a v-on:click="changeView('createTokens')" class="link-text-color">Create tokens</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <footer class="footer">
+        <strong>Project Olympus</strong> v0.1 &copy; Copyright 2018
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>

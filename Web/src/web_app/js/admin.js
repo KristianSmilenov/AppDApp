@@ -16,16 +16,16 @@
       // User when creating new crowdfunding campaign
       crowdfundingContract_beneficiaryAddress: '',
       crowdfundingContract_endDate: '1522576800',
-      crowdfundingContract_conversionRate: 1000,
+      crowdfundingContract_tokensPerEth: 10000,
       crowdfundingContract_description: 'Pre-sale #1',
-      crowdfundingContract_minCap: 1000,
+      crowdfundingContract_minCap: 25,
 
       // Used when creating new token
       tokenContract_name: 'Crypto Investoment Fund',
       tokenContract_symbol: 'CIF',
-      tokenContract_totalSupply: '1000',
-      tokenContract_rate: '1000',
-      tokenContract_minInvestment: '1000',
+      tokenContract_totalSupply: '10000000', // Total supply 10 MM CIF * ~0.10$ = ~1MM
+      tokenContract_tokensPerEth: '10000', // User will get 10k CIF for 1 ETH ~0.10$ / CIF
+      tokenContract_minInvestment: '25', // 25 ETH ~25000$
 
       // Show user token balance for selected contract
       selectedTokenContractSymbol: '',
@@ -34,8 +34,6 @@
 
       myMetaMaskAddress: '',
       userAddress: '',
-      //sendToAddress: '',
-      //sendValueAmount: '',
       savedCampaigns: [],
       savedTokens: []
     },
@@ -72,6 +70,7 @@
         getCampaignContractsFromDB()
           .then((campaigns) => {
             self.savedCampaigns = campaigns;
+            //TODO: load data from Blockchain
           })
           .catch(err => console.log(err));
       },
@@ -91,8 +90,10 @@
         fundraiserContract.methods.invalidate().send(
           { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             if (error) showError(error);
-            else showSuccess(result);
-          });
+            else showSuccess('Campaign invalidated', result);
+          }).on('transactionHash', (transactionHash) => {
+            showSuccess('Invalidating campaign', 'Transaction hash: ' + transactionHash);
+         });
       },
 
       closeCampaign: async function (campaignAddress) {
@@ -102,8 +103,10 @@
         fundraiserContract.methods.close().send(
           { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             if (error) showError(error);
-            else showSuccess(result);
-          });
+            else showSuccess('Campaign closed', result);
+          }).on('transactionHash', (transactionHash) => {
+            showSuccess('Closing campaign', 'Transaction hash: ' + transactionHash);
+         });
       },
 
       finalizeCampaign: async function (campaignAddress) {
@@ -113,8 +116,10 @@
         fundraiserContract.methods.sendTokens().send(
           { from: userAddress, gas: gas, gasPrice: gasPrice }, function (error, result) {
             if (error) showError(error);
-            else showSuccess(result);
-          });
+            else showSuccess('Campaign finalized', result);
+          }).on('transactionHash', (transactionHash) => {
+            showSuccess('Finalizing campaign', 'Transaction hash: ' + transactionHash);
+         });
       },
 
       refreshGrid: function () {
@@ -124,45 +129,20 @@
       },
 
       refreshCampaignData: async function (campaignAddress) {
-        await this.getCampaignState(campaignAddress);
-        await this.getCampaignBalance(campaignAddress);
-        await this.getCampaignParticipantsCount(campaignAddress);
-      },
-
-      getCampaignState: async function (campaignAddress) {
         var state = await getCampaignState(campaignAddress);
-        this.savedCampaigns
-          .find(c => c.fundraiserContractAddress == campaignAddress)
-          .state = state;
-
-        this.refreshGrid();
-      },
-
-      getCampaignBalance: async function (campaignAddress) {
         var bal = await getCampaignBalance(campaignAddress);
-
-        this.savedCampaigns
-          .find(c => c.fundraiserContractAddress == campaignAddress)
-          .balance = bal;
-
+        var count = await getCampaignParticipantsCount(campaignAddress);
+        
+        var campaign = this.savedCampaigns.find(c => c.fundraiserContractAddress == campaignAddress);
+        campaign.state = state;
+        campaign.balance = bal;
+        campaign.participantCount = count;
+        campaign.progress = parseInt(Math.min(100, Number(bal) / campaign.minCap * 100));
         this.refreshGrid();
       },
 
       contributeToCampaign: async function (campaignAddress) {
         await contributeToCampaign(campaignAddress, await getMetaMaskAccount(), 0.01);
-      },
-
-      getCampaignParticipantsCount: async function (campaignAddress) {
-        var count = await getCampaignParticipantsCount(campaignAddress);
-        this.savedCampaigns
-          .find(c => c.fundraiserContractAddress == campaignAddress)
-          .participantCount = count;
-
-        this.refreshGrid();
-      },
-
-      convertToETH: function (wei) {
-        return web3.utils.fromWei(wei.toString(), 'ether');
       },
 
       deployContract: deployContract,
@@ -172,7 +152,10 @@
       viewTokensBalance: viewTokensBalance,
 
       saveCrowdfundingContractToDB: saveCrowdfundingContractToDB,
-      saveTokenContractToDB: saveTokenContractToDB
+      saveTokenContractToDB: saveTokenContractToDB,
+
+      convertToEther: convertToEther,
+      convertToWei: convertToWei
     }
   });
 })();
